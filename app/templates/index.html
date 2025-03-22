@@ -168,6 +168,10 @@
         <input type="password" id="password" name="password" placeholder="Пароль" required>
 
         <button type="submit">Отдать</button>
+        {% if error %}
+            <p style="color: #ff5e5e; margin-top: 10px;">{{ error }}</p>
+        {% endif %}
+
     </form>
 </div>
 

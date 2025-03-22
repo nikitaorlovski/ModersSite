@@ -9,6 +9,7 @@ from starlette.middleware.sessions import SessionMiddleware
 from datetime import datetime
 from fastapi.staticfiles import StaticFiles
 import os
+from app.db import db
 
 app = FastAPI()
 
@@ -31,28 +32,28 @@ STAFF_URL_TEMPLATE = "https://meta-api.metalabs.work/api/v3/users/{project}/{ser
 API_BASE_URL = "https://meta-api.metalabs.work/api/v3/users"
 PLAYTIME_URL_TEMPLATE = "https://meta-api.metalabs.work/api/v3/playtime/{project}/{server}/list?uuids[]="
 
-USERS = {
-    "killchik": "adminы",
-    "admin": "password123",
-    "moder": "mod123"
-}
+
+@app.on_event("startup")
+async def startup():
+    await db.connect()
+    await db.create_users_table()
 
 def require_login(request: Request):
     if not request.session.get("username"):
-        raise HTTPException(status_code=HTTP_401_UNAUTHORIZED, detail="Unauthorized")
+        return RedirectResponse("/", status_code=303)
 
 # ✅ **Маршрут для страницы входа**
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
-
-# ✅ **Обработка формы логина**
 @app.post("/login")
 async def login(request: Request, username: str = Form(...), password: str = Form(...)):
-    if username in USERS and USERS[username] == password:
+    if await db.verify_user(username, password):
         request.session["username"] = username
         return RedirectResponse(url="/projects", status_code=303)
     return templates.TemplateResponse("index.html", {"request": request, "error": "Неверный логин или пароль"})
+# ✅ **Обработка формы логина**
+
 
 @app.get("/logout")
 async def logout(request: Request):
