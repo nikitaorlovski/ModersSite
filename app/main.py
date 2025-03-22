@@ -1,3 +1,5 @@
+from fastapi import Depends, HTTPException
+from starlette.status import HTTP_401_UNAUTHORIZED
 import httpx
 from fastapi import FastAPI, Request, Form
 from fastapi import Query
@@ -16,6 +18,7 @@ os.makedirs(static_dir, exist_ok=True)
 app.mount("/static", StaticFiles(directory=static_dir), name="static")
 
 
+
 # Настройка сессий
 app.add_middleware(SessionMiddleware, secret_key="your_secret_key")
 
@@ -28,9 +31,15 @@ STAFF_URL_TEMPLATE = "https://meta-api.metalabs.work/api/v3/users/{project}/{ser
 API_BASE_URL = "https://meta-api.metalabs.work/api/v3/users"
 PLAYTIME_URL_TEMPLATE = "https://meta-api.metalabs.work/api/v3/playtime/{project}/{server}/list?uuids[]="
 
-# Логин и пароль по умолчанию
-DEFAULT_USERNAME = "killchik"
-DEFAULT_PASSWORD = "admin"
+USERS = {
+    "killchik": "adminы",
+    "admin": "password123",
+    "moder": "mod123"
+}
+
+def require_login(request: Request):
+    if not request.session.get("username"):
+        raise HTTPException(status_code=HTTP_401_UNAUTHORIZED, detail="Unauthorized")
 
 # ✅ **Маршрут для страницы входа**
 @app.get("/", response_class=HTMLResponse)
@@ -40,27 +49,30 @@ async def home(request: Request):
 # ✅ **Обработка формы логина**
 @app.post("/login")
 async def login(request: Request, username: str = Form(...), password: str = Form(...)):
-    if username == DEFAULT_USERNAME and password == DEFAULT_PASSWORD:
-        request.session["username"] = username  # Сохраняем логин в сессии
-        return RedirectResponse(url="/projects", status_code=303)  # Перенаправляем на выбор проекта
-    else:
-        error_message = "Неверный логин или пароль"
-        return templates.TemplateResponse("index.html", {"request": request, "error": error_message})
+    if username in USERS and USERS[username] == password:
+        request.session["username"] = username
+        return RedirectResponse(url="/projects", status_code=303)
+    return templates.TemplateResponse("index.html", {"request": request, "error": "Неверный логин или пароль"})
+
+@app.get("/logout")
+async def logout(request: Request):
+    request.session.clear()
+    return RedirectResponse(url="/", status_code=303)
 
 # ✅ **Страница выбора проекта**
 @app.get("/projects")
-async def show_projects(request: Request):
+async def show_projects(request: Request, _: str = Depends(require_login)):
     return templates.TemplateResponse("projects.html", {"request": request})
 
 # ✅ **Страница выбора проекта (после клика)**
 @app.get("/select_project/{project_name}")
-async def select_project(request: Request, project_name: str):
+async def select_project(request: Request, project_name: str, _: str = Depends(require_login)):
     request.session["project_name"] = project_name
     return templates.TemplateResponse("server_selection.html", {"request": request, "project_name": project_name})
 
 # ✅ **Страница выбора сервера**
 @app.get("/server/{server_name}")
-async def select_server(request: Request, server_name: str):
+async def select_server(request: Request, server_name: str, _: str = Depends(require_login)):
     project_name = request.session.get("project_name", "Не выбран")
     request.session["server_name"] = server_name
     username = request.session.get("username", "Неизвестно")
@@ -86,7 +98,7 @@ async def select_server(request: Request, server_name: str):
 import asyncio
 
 @app.get("/get_moderator_activity")
-async def get_moderator_activity(request: Request):
+async def get_moderator_activity(request: Request, _: str = Depends(require_login)):
     """Возвращает активность модераторов за текущий месяц, отсортированную по онлайну"""
     project_name = request.session.get("project_name", "Не выбран")
     server_name = request.session.get("server_name", "Не выбран")
@@ -148,7 +160,7 @@ async def get_moderator_activity(request: Request):
 
 
 # ✅ **Функция получения онлайна за месяц**
-async def get_monthly_playtime(project_name: str, server_name: str, user_uuid: str) -> str:
+async def get_monthly_playtime(project_name: str, server_name: str, user_uuid: str, _: str = Depends(require_login)) -> str:
     url = PLAYTIME_URL_TEMPLATE.format(project=project_name, server=server_name) + user_uuid
     headers = {"Meta-Api-Key": "sATznYRhaQ1bDYAptTtXpsJXPCtsUP"}
 
@@ -175,7 +187,7 @@ async def get_monthly_playtime(project_name: str, server_name: str, user_uuid: s
         return "Нет данных"
 
 # ✅ **Функция получения UUID пользователя**
-async def get_user_uuid(project_name: str, username: str) -> str:
+async def get_user_uuid(project_name: str, username: str, _: str = Depends(require_login)) -> str:
     url = f"{API_BASE_URL}/{project_name}/get/uuids"
     headers = {
         "Meta-Api-Key": "sATznYRhaQ1bDYAptTtXpsJXPCtsUP"
@@ -194,7 +206,7 @@ async def get_user_skin(project_name: str, user_uuid: str) -> str:
     return f"https://meta-api.metalabs.work/api/v3/users/skins/{project_name}/head/{user_uuid}"
 
 @app.get("/get_splaytime")
-async def get_splaytime(request: Request, nickname: str = Query(...), start_date: str = Query(...), end_date: str = Query(...)):
+async def get_splaytime(request: Request, nickname: str = Query(...), start_date: str = Query(...), end_date: str = Query(...), _: str = Depends(require_login)):
     """Возвращает время онлайна за заданный период"""
     project_name = request.session.get("project_name", "Не выбран")
     server_name = request.session.get("server_name", "Не выбран")
@@ -224,7 +236,7 @@ async def get_splaytime(request: Request, nickname: str = Query(...), start_date
 
     return {"error": "Не удалось получить данные"}
 
-async def get_server_staff(project_name: str, server_name: str):
+async def get_server_staff(project_name: str, server_name: str, _: str = Depends(require_login)):
     url = STAFF_URL_TEMPLATE.format(project=project_name, server=server_name)
     headers = {"Meta-Api-Key": "sATznYRhaQ1bDYAptTtXpsJXPCtsUP"}
 
@@ -258,7 +270,7 @@ async def get_server_staff(project_name: str, server_name: str):
     return None  # Ошибка или пустой состав
 
 
-async def get_nicknames_by_uuids(uuids: list, project_name: str):
+async def get_nicknames_by_uuids(uuids: list, project_name: str, _: str = Depends(require_login)):
     if not uuids:
         return {}
     print("1")
@@ -277,7 +289,7 @@ async def get_nicknames_by_uuids(uuids: list, project_name: str):
     return {}
 
 @app.get("/staff", response_class=HTMLResponse)
-async def staff_page(request: Request):
+async def staff_page(request: Request, _: str = Depends(require_login)):
     project_name = request.session.get("project_name", "Не выбран")
     server_name = request.session.get("server_name", "Не выбран")
 
@@ -319,7 +331,7 @@ async def staff_page(request: Request):
     })
 
 @app.get("/get_staff")
-async def get_staff(request: Request):
+async def get_staff(request: Request, _: str = Depends(require_login)):
     project_name = request.session.get("project_name", "Не выбран")
     server_name = request.session.get("server_name", "Не выбран")
 
