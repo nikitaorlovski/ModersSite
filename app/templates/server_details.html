@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Детали сервера</title>
+    <style>
+        /* Глобальные стили */
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            background-size: 400% 400%;
+            animation: gradientBG 10s ease infinite;
+            color: white;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: flex-start; /* Поднимаем контент вверх */
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            flex-direction: column;
+            text-align: center;
+            padding-top: 20px; /* Добавляем отступ сверху */
+        }
+
+        /* Анимация фона */
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Заголовки */
+        .title-container {
+            margin-bottom: 20px;
+        }
+
+        h1, h2 {
+            margin: 5px;
+        }
+
+        /* Блок игрока */
+        .player-container {
+            margin-top: 10px;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 20px rgba(255, 255, 255, 0.3);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        img {
+            width: 100px;
+            height: 100px;
+            border-radius: 10px;
+        }
+
+        .player-name {
+            margin-top: 10px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #FFD700;
+        }
+
+        .playtime {
+            margin-top: 5px;
+            font-size: 1.2rem;
+            color: #ffffff;
+        }
+
+        /* Боковое меню */
+        .sidebar {
+            height: 100vh;
+            width: 250px;
+            position: fixed;
+            top: 0;
+            left: -250px;
+            background-color: rgba(26, 26, 46, 0.9);
+            transition: left 0.3s ease-in-out;
+            padding-top: 60px;
+            box-shadow: 4px 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .sidebar a {
+            padding: 15px 20px;
+            text-decoration: none;
+            font-size: 18px;
+            color: white;
+            display: block;
+            transition: 0.3s;
+        }
+
+        .sidebar a:hover {
+            background-color: #16213E;
+        }
+
+        .menu-btn {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            font-size: 30px;
+            cursor: pointer;
+            color: white;
+            background: none;
+            border: none;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 30px;
+            cursor: pointer;
+            color: white;
+            background: none;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Кнопка для открытия меню -->
+<button class="menu-btn" onclick="openMenu()">☰</button>
+
+<!-- Боковое меню -->
+<div class="sidebar" id="sidebar">
+    <button class="close-btn" onclick="closeMenu()">×</button>
+    <a href="#" onclick="loadModerators()">📋 Список модераторов</a>
+    <a href="#" onclick="loadModeratorActivity()">📊 Активность модераторов</a>
+    <a href="#" onclick="openSplaytimeModal()">📅 Онлайн за период</a>
+
+</div>
+
+<!-- Контейнер с названием проекта и сервера -->
+<div class="title-container">
+    <h1>{{ project_name }}</h1>
+    <h2>{{ server_name }}</h2>
+</div>
+
+<!-- Блок игрока -->
+<div class="player-container">
+    <img src="{{ user_skin_url }}" alt="Голова игрока">
+    <p class="player-name">{{ username }}</p>
+    <p class="playtime">🕒 Онлайн за месяц: {{ monthly_playtime }}</p>
+</div>
+
+<div id="moderators-container" style="display: none; margin-top: 20px;">
+    <div class="moderators-grid">
+        <div class="moderators-column">
+            <h4 class="stmoderator">Старшие модераторы</h4>
+            <div class="moderator-list" id="stmoderators-list"></div>
+        </div>
+        <div class="moderators-column">
+            <h4 class="moder">Модераторы</h4>
+            <div class="moderator-list" id="moderators-list"></div>
+        </div>
+        <div class="moderators-column">
+            <h4 class="helper">Хелперы</h4>
+            <div class="moderator-list" id="helpers-list"></div>
+        </div>
+        <div class="moderators-column">
+            <h4 class="intern">Стажеры</h4>
+            <div class="moderator-list" id="interns-list"></div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Основная сетка (4 колонки) */
+    .moderators-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+        text-align: center;
+        margin-top: 10px;
+    }
+
+    /* Каждая колонка */
+    .moderators-column {
+        background: rgba(0, 0, 0, 0.7);
+        padding: 10px;
+        border-radius: 8px;
+        box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.2);
+    }
+
+    /* Заголовки */
+    .moderators-column h4 {
+        margin-bottom: 5px;
+        font-size: 1rem;
+    }
+
+
+    /* Цвета заголовков */
+    .stmoderator { color: #FFD700; } /* Золотой */
+    .moder { color: #00FF00; } /* Зеленый */
+    .helper { color: #1E90FF; } /* Синий */
+    .intern { color: #FF4500; } /* Оранжевый */
+
+    /* Карточки модераторов */
+    .moderator-card {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 5px;
+        border-radius: 6px;
+        margin: 3px 0;
+        text-align: center;
+        font-weight: bold;
+        font-size: 0.9rem;
+        width: 90%;
+        max-width: 180px;
+        box-shadow: 0px 0px 5px rgba(255, 255, 255, 0.1);
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+    }
+
+    /* Адаптивность: если экран маленький, уменьшаем колонки */
+    @media (max-width: 1200px) {
+        .moderators-grid {
+            grid-template-columns: repeat(2, 1fr); /* 2 колонки */
+        }
+    }
+
+    @media (max-width: 800px) {
+        .moderators-grid {
+            grid-template-columns: repeat(1, 1fr); /* 1 колонка */
+        }
+    }
+</style>
+
+<script>
+    async function loadModerators() {
+        let container = document.getElementById("moderators-container");
+        container.style.display = "block";
+
+        document.getElementById("stmoderators-list").innerHTML = "<p>Загружаем...</p>";
+        document.getElementById("moderators-list").innerHTML = "<p>Загружаем...</p>";
+        document.getElementById("helpers-list").innerHTML = "<p>Загружаем...</p>";
+        document.getElementById("interns-list").innerHTML = "<p>Загружаем...</p>";
+
+        try {
+            let response = await fetch("/get_staff");
+            let data = await response.json();
+
+            if (data.error) {
+                document.getElementById("stmoderators-list").innerHTML = `<p style="color:red;">Ошибка: ${data.error}</p>`;
+                return;
+            }
+
+            function createCard(name) {
+                return `<div class="moderator-card">${name}</div>`;
+            }
+
+            // Обновляем список и количество
+            let stmodList = data.staff.stmoderators.map(createCard).join("");
+            let modList = data.staff.moderators.map(createCard).join("");
+            let helperList = data.staff.helpers.map(createCard).join("");
+            let internList = data.staff.interns.map(createCard).join("");
+
+            document.getElementById("stmoderators-list").innerHTML = stmodList;
+            document.getElementById("moderators-list").innerHTML = modList;
+            document.getElementById("helpers-list").innerHTML = helperList;
+            document.getElementById("interns-list").innerHTML = internList;
+
+
+        } catch (error) {
+            document.getElementById("stmoderators-list").innerHTML = `<p style="color:red;">Ошибка загрузки данных.</p>`;
+        }
+    }
+</script>
+
+<!-- Контейнер для активности модераторов -->
+<div id="activity-container" style="display: none; margin-top: 20px;">
+    <h3>📊 Активность модераторов (за месяц)</h3>
+    <div id="activity-list" class="activity-grid"></div>
+</div>
+
+
+<style>
+            /* Сетка активности (3 колонки) */
+        .activity-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+            text-align: center;
+        }
+
+        /* Карточка модератора */
+        .activity-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 8px rgba(255, 255, 255, 0.2);
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Имя модератора */
+        .activity-card .mod-name {
+            font-size: 1.3rem;
+            color: #FFD700;
+        }
+
+        /* Часы онлайна */
+        .activity-card .mod-hours {
+            font-size: 1.1rem;
+            color: #1E90FF;
+        }
+
+</style>
+
+<script>
+    async function loadModeratorActivity() {
+        let activityContainer = document.getElementById("activity-container");
+        let activityList = document.getElementById("activity-list");
+        let moderatorsContainer = document.getElementById("moderators-container");
+
+        // Скрываем список модераторов при открытии активности
+        moderatorsContainer.style.display = "none";
+        activityContainer.style.display = "block";
+        activityList.innerHTML = "<p>Загружаем данные...</p>";
+
+        try {
+            let response = await fetch("/get_moderator_activity");
+            let data = await response.json();
+
+            if (data.error) {
+                activityList.innerHTML = `<p style="color:red;">Ошибка: ${data.error}</p>`;
+                return;
+            }
+
+            activityList.innerHTML = "";
+            data.activity.forEach(({ nickname, hours }) => {
+                let modCard = document.createElement("div");
+                modCard.className = "activity-card";
+                modCard.innerHTML = `
+                    <div class="mod-name">${nickname}</div>
+                    <div class="mod-hours">🕒 ${hours}</div>
+                `;
+                activityList.appendChild(modCard);
+            });
+
+        } catch (error) {
+            activityList.innerHTML = `<p style="color:red;">Ошибка загрузки данных.</p>`;
+        }
+    }
+
+    async function loadModerators() {
+        let moderatorsContainer = document.getElementById("moderators-container");
+        let activityContainer = document.getElementById("activity-container");
+
+        // Скрываем активность модераторов при открытии списка
+        activityContainer.style.display = "none";
+        moderatorsContainer.style.display = "block";
+
+        document.getElementById("stmoderators-list").innerHTML = "<p>Загружаем...</p>";
+        document.getElementById("moderators-list").innerHTML = "<p>Загружаем...</p>";
+        document.getElementById("helpers-list").innerHTML = "<p>Загружаем...</p>";
+        document.getElementById("interns-list").innerHTML = "<p>Загружаем...</p>";
+
+        try {
+            let response = await fetch("/get_staff");
+            let data = await response.json();
+
+            if (data.error) {
+                document.getElementById("stmoderators-list").innerHTML = `<p style="color:red;">Ошибка: ${data.error}</p>`;
+                return;
+            }
+
+            function createCard(name) {
+                return `<div class="moderator-card">${name}</div>`;
+            }
+
+            let stmodList = data.staff.stmoderators.map(createCard).join("");
+            let modList = data.staff.moderators.map(createCard).join("");
+            let helperList = data.staff.helpers.map(createCard).join("");
+            let internList = data.staff.interns.map(createCard).join("");
+
+            document.getElementById("stmoderators-list").innerHTML = stmodList;
+            document.getElementById("moderators-list").innerHTML = modList;
+            document.getElementById("helpers-list").innerHTML = helperList;
+            document.getElementById("interns-list").innerHTML = internList;
+
+        } catch (error) {
+            document.getElementById("stmoderators-list").innerHTML = `<p style="color:red;">Ошибка загрузки данных.</p>`;
+        }
+    }
+</script>
+
+<!-- Всплывающее окно для Splaytime -->
+<div id="splaytime-modal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeSplaytimeModal()">&times;</span>
+        <h3>📅 Проверка онлайна</h3>
+        <input type="text" id="splaytime-nickname" placeholder="Введите ник" class="input-field">
+
+
+        <input type="date" id="splaytime-start">
+        <input type="date" id="splaytime-end">
+
+        <button onclick="fetchSplaytime()">🔍 Проверить</button>
+    </div>
+</div>
+
+<!-- Контейнер для результата -->
+<div id="splaytime-result" style="display: none; margin-top: 15px;">
+    <h3>Результат запроса</h3>
+    <p id="splaytime-output"></p>
+</div>
+
+<style>
+
+                .input-field::placeholder {
+            color: #bbb; /* Цвет плейсхолдера */
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .input-field {
+            width: 80%;
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 5px;
+            border: none;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+            /* Стили для всплывающего окна */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 15px rgba(255, 255, 255, 0.2);
+            text-align: center;
+        }
+
+        .modal-content {
+            background: #1a1a2e;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .close {
+            color: white;
+            float: right;
+            font-size: 28px;
+            cursor: pointer;
+        }
+
+        input[type="text"], input[type="date"] {
+            width: 80%;
+            padding: 8px;
+            margin: 5px 0;
+            border-radius: 5px;
+            border: none;
+            text-align: center;
+        }
+
+        button {
+            background: #FFD700;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #FFC107;
+        }
+
+</style>
+
+<script>
+    // Функции для работы с модальным окном Splaytime
+    function openSplaytimeModal() {
+        document.getElementById("splaytime-modal").style.display = "block";
+    }
+
+    function closeSplaytimeModal() {
+        document.getElementById("splaytime-modal").style.display = "none";
+    }
+
+    async function fetchSplaytime() {
+        let nickname = document.getElementById("splaytime-nickname").value.trim();
+        let startDate = document.getElementById("splaytime-start").value;
+        let endDate = document.getElementById("splaytime-end").value;
+        let resultContainer = document.getElementById("splaytime-result");
+        let output = document.getElementById("splaytime-output");
+
+        if (!nickname || !startDate || !endDate) {
+            alert("Пожалуйста, заполните все поля!");
+            return;
+        }
+
+        try {
+            let response = await fetch(`/get_splaytime?nickname=${nickname}&start_date=${startDate}&end_date=${endDate}`);
+            let data = await response.json();
+
+            if (data.error) {
+                output.innerHTML = `<p style="color:red;">Ошибка: ${data.error}</p>`;
+            } else {
+                output.innerHTML = `<strong>${data.nickname}</strong> был в сети <strong>${data.time}</strong>`;
+            }
+
+            resultContainer.style.display = "block";
+        } catch (error) {
+            output.innerHTML = `<p style="color:red;">Ошибка при запросе</p>`;
+            resultContainer.style.display = "block";
+        }
+
+        closeSplaytimeModal();
+    }
+</script>
+
+
+
+<script>
+    function openMenu() {
+        document.getElementById("sidebar").style.left = "0";
+    }
+
+    function closeMenu() {
+        document.getElementById("sidebar").style.left = "-250px";
+    }
+</script>
+
+</body>
+</html>

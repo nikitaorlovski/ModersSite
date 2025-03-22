@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Состав сервера</title>
+    <style>
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            background-size: 400% 400%;
+            animation: gradientBG 10s ease infinite;
+            color: white;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        h1, h2 {
+            margin: 10px;
+        }
+
+        .staff-container {
+            background: rgba(0, 0, 0, 0.6);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 20px rgba(255, 255, 255, 0.3);
+            display: inline-block;
+            text-align: left;
+            padding: 20px;
+        }
+
+        .staff-group {
+            margin-bottom: 15px;
+        }
+
+        .staff-group h3 {
+            margin-bottom: 5px;
+            color: #FFD700;
+        }
+
+        .staff-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .staff-list li {
+            padding: 5px 0;
+        }
+
+    </style>
+</head>
+<body>
+
+<h1>Проект: {{ project_name }}</h1>
+<h2>Сервер: {{ server_name }}</h2>
+
+{% if error %}
+    <p style="color: red;">{{ error }}</p>
+{% else %}
+    <div class="staff-container">
+        <div class="staff-group">
+            <h3>Старшие модераторы</h3>
+            <ul class="staff-list">
+                {% for name in staff.stmoderators %}
+                    <li>{{ name }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="staff-group">
+            <h3>Модераторы</h3>
+            <ul class="staff-list">
+                {% for name in staff.moderators %}
+                    <li>{{ name }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="staff-group">
+            <h3>Хелперы</h3>
+            <ul class="staff-list">
+                {% for name in staff.helpers %}
+                    <li>{{ name }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="staff-group">
+            <h3>Стажеры</h3>
+            <ul class="staff-list">
+                {% for name in staff.interns %}
+                    <li>{{ name }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+{% endif %}
+
+</body>
+</html>
