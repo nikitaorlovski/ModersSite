@@ -37,6 +37,12 @@ PLAYTIME_URL_TEMPLATE = "https://meta-api.metalabs.work/api/v3/playtime/{project
 async def startup():
     await db.connect()
     await db.create_users_table()
+    # 👇 Добавляем пользователей, если их ещё нет
+    if not await db.user_exists("killchik"):
+        await db.add_user("killchik", "adminы")
+
+    if not await db.user_exists("admin"):
+        await db.add_user("admin", "password123")
 
 def require_login(request: Request):
     if not request.session.get("username"):
