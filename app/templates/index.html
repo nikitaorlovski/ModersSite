@@ -6,22 +6,25 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <title>Вход в панель активности модераторов</title>
     <style>
-            /* Анимированный фон */
-                body {
-            background: url('static/1.jpg') no-repeat center center fixed;
-            background-size: cover;
-            color: white;
-            font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            text-align: center;
-            overflow: hidden;
-        }
+           body {
+    background: url('static/1.jpg') no-repeat center center;
+    background-size: cover;
+    color: white;
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    text-align: center;
+    overflow: hidden;
 
+    /* УБИРАЕМ фиксированность */
+    background-attachment: scroll;
+    background-position: 50% 50%;
+    transition: background-position 0.1s ease-out;
+}
         /* Объемная надпись MetaLabs */
         .parallax-title {
             font-size: 5rem;
@@ -168,9 +171,10 @@
         <input type="password" id="password" name="password" placeholder="Пароль" required>
 
         <button type="submit">Отдать</button>
-        {% if error %}
+        {% if error is defined and error %}
             <p style="color: #ff5e5e; margin-top: 10px;">{{ error }}</p>
         {% endif %}
+
 
     </form>
 </div>
@@ -179,12 +183,21 @@
 <script>
     document.addEventListener("mousemove", (e) => {
         const title = document.querySelector(".parallax-title");
+
+        // Параллакс текста (название)
         const moveX = (e.clientX - window.innerWidth / 2) * 0.01;
         const moveY = (e.clientY - window.innerHeight / 2) * 0.01;
-
         title.style.transform = `translate(${moveX}px, ${moveY}px)`;
+
+        // Параллакс фона (движение background-position)
+        const x = (e.clientX / window.innerWidth - 0.5) * 10;  // чувствительность
+        const y = (e.clientY / window.innerHeight - 0.5) * 10;
+
+        document.body.style.backgroundPosition = `${50 + x}% ${50 + y}%`;
     });
 </script>
+
+
 
 <script>
     // Массив возможных фраз

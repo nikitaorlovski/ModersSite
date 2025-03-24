@@ -8,8 +8,10 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from starlette.middleware.sessions import SessionMiddleware
 from datetime import datetime
 from fastapi.staticfiles import StaticFiles
+from fastapi.security import OAuth2PasswordRequestForm
 import os
-from app.db import db
+from app.auth import authenticate_user, get_current_user
+from starlette.requests import Request
 
 app = FastAPI()
 
@@ -33,32 +35,29 @@ API_BASE_URL = "https://meta-api.metalabs.work/api/v3/users"
 PLAYTIME_URL_TEMPLATE = "https://meta-api.metalabs.work/api/v3/playtime/{project}/{server}/list?uuids[]="
 
 
-@app.on_event("startup")
-async def startup():
-    await db.connect()
-    await db.create_users_table()
-    # 👇 Добавляем пользователей, если их ещё нет
-    if not await db.user_exists("killchik"):
-        await db.add_user("killchik", "adminы")
-
-    if not await db.user_exists("admin"):
-        await db.add_user("admin", "password123")
+@app.post("/token")
+async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
+    user = authenticate_user(form_data.username, form_data.password)
+    if not user:
+        return {"error": "Неверный логин или пароль"}
+    return {"access_token": user["username"], "token_type": "bearer"}
 
 def require_login(request: Request):
-    if not request.session.get("username"):
-        return RedirectResponse("/", status_code=303)
+    if "username" not in request.session:
+        raise HTTPException(status_code=401, detail="Вы не авторизованы")
 
 # ✅ **Маршрут для страницы входа**
 @app.get("/", response_class=HTMLResponse)
-async def home(request: Request):
+async def login_page(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 @app.post("/login")
 async def login(request: Request, username: str = Form(...), password: str = Form(...)):
-    if await db.verify_user(username, password):
-        request.session["username"] = username
-        return RedirectResponse(url="/projects", status_code=303)
-    return templates.TemplateResponse("index.html", {"request": request, "error": "Неверный логин или пароль"})
-# ✅ **Обработка формы логина**
+    user = authenticate_user(username, password)
+    if not user:
+        return templates.TemplateResponse("index.html", {"request": request, "error": "Неверный логин или пароль"})
+    request.session["username"] = username
+    return RedirectResponse("/projects", status_code=303)
+
 
 
 @app.get("/logout")
@@ -109,6 +108,8 @@ async def get_moderator_activity(request: Request, _: str = Depends(require_logi
     """Возвращает активность модераторов за текущий месяц, отсортированную по онлайну"""
     project_name = request.session.get("project_name", "Не выбран")
     server_name = request.session.get("server_name", "Не выбран")
+    if not project_name or not server_name:
+        return {"error": "Проект или сервер не выбраны. Пожалуйста, выберите заново."}
 
     # 🔹 Получаем состав модераторов
     staff = await get_server_staff(project_name, server_name)

@@ -6,13 +6,18 @@
     <title>Выбор проекта и сервера</title>
     <style>
         body {
-            background-color: #1a1a2e;
-            color: white;
-            font-family: Arial, sans-serif;
-            display: flex;
-            height: 100vh;
-            margin: 0;
-        }
+    background-color: #1a1a2e;
+    background-image: url('/static/default.jpg');
+    background-size: cover;
+    background-position: center;
+    transition: background-image 0s, background-size 0.5s ease, background-position 0.5s ease;
+    color: white;
+    font-family: Arial, sans-serif;
+    display: flex;
+    height: 100vh;
+    margin: 0;
+}
+
 
         /* --- Стили бокового меню (проекты) --- */
         .sidebar {
@@ -247,23 +252,31 @@
 
                 // Меняем фон при наведении
                 div.onmouseover = () => {
-                    if (serverBackgrounds[server]) {
-                        document.body.style.backgroundImage = `url(${serverBackgrounds[server]})`;
-                    }
-                };
+                if (serverBackgrounds[server]) {
+                    changeBackgroundSmoothly(serverBackgrounds[server]);
+                }
+            };
 
-                // Фиксируем фон при клике (закрепляем)
-                div.onclick = () => {
-                    if (serverBackgrounds[server]) {
-                        selectedBackground = serverBackgrounds[server]; // Запоминаем выбранный фон
-                        document.body.style.backgroundImage = `url(${selectedBackground})`;
-                    }
-                    window.location.href = `/server/${server}`;
-                };
+            div.onclick = () => {
+                if (serverBackgrounds[server]) {
+                    selectedBackground = serverBackgrounds[server];
+                    changeBackgroundSmoothly(selectedBackground);
+                }
+                window.location.href = `/server/${server}`;
+            };
+
 
                 serverListDiv.appendChild(div);
             });
         }
+        function changeBackgroundSmoothly(newImageUrl) {
+    const img = new Image();
+    img.src = newImageUrl;
+
+    img.onload = () => {
+        document.body.style.backgroundImage = `url(${newImageUrl})`;
+    };
+}
 
 
     </script>
