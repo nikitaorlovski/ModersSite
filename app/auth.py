@@ -4,6 +4,7 @@ fake_users_db = {
     "killchik": {"username": "killchik", "password": "adminы"},
     "admin": {"username": "admin", "password": "password123"},
     "FearTerror": {"username": "FearTerror", "password": "admin"},
+    "Tori_sss": {"username": "Tori_sss", "password": "admin"},
 }
 
 def authenticate_user(username: str, password: str) -> Optional[dict]:
