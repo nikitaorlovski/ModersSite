@@ -234,41 +234,37 @@
         };
 
         function selectProject(projectName) {
-            document.getElementById("server-title").innerText = `Выберите сервер для ${projectName}`;
-            document.getElementById("project-logo").src = projectLogos[projectName];
-            document.getElementById("project-info").style.display = "flex";
+    document.getElementById("server-title").innerText = `Выберите сервер для ${projectName}`;
+    document.getElementById("project-logo").src = projectLogos[projectName];
+    document.getElementById("project-info").style.display = "flex";
 
-            let serverListDiv = document.getElementById("server-list");
-            serverListDiv.innerHTML = "";
-            serverListDiv.style.display = "flex";
+    let serverListDiv = document.getElementById("server-list");
+    serverListDiv.innerHTML = "";
+    serverListDiv.style.display = "flex";
 
-            servers[projectName].forEach(server => {
-                let div = document.createElement("div");
-                div.className = "server";
-                div.innerText = server;
-                div.onclick = () => {
-                    window.location.href = `/server/${server}`;
-                };
+    servers[projectName].forEach(server => {
+        let div = document.createElement("div");
+        div.className = "server";
+        div.innerText = server;
 
-                // Меняем фон при наведении
-                div.onmouseover = () => {
-                if (serverBackgrounds[server]) {
-                    changeBackgroundSmoothly(serverBackgrounds[server]);
-                }
-            };
+        div.onmouseover = () => {
+            if (serverBackgrounds[server]) {
+                changeBackgroundSmoothly(serverBackgrounds[server]);
+            }
+        };
 
-            div.onclick = () => {
-                if (serverBackgrounds[server]) {
-                    selectedBackground = serverBackgrounds[server];
-                    changeBackgroundSmoothly(selectedBackground);
-                }
-                window.location.href = `/server/${server}`;
-            };
+        div.onclick = () => {
+            if (serverBackgrounds[server]) {
+                selectedBackground = serverBackgrounds[server];
+                changeBackgroundSmoothly(selectedBackground);
+            }
+            window.location.href = `/server/${projectName}/${server}`;
+        };
 
+        serverListDiv.appendChild(div);
+    });
+}
 
-                serverListDiv.appendChild(div);
-            });
-        }
         function changeBackgroundSmoothly(newImageUrl) {
     const img = new Image();
     img.src = newImageUrl;

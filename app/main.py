@@ -43,8 +43,8 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
     return {"access_token": user["username"], "token_type": "bearer"}
 
 def require_login(request: Request):
-    if "username" not in request.session:
-        raise HTTPException(status_code=401, detail="Вы не авторизованы")
+    if not request.session.get("username"):
+        return RedirectResponse("/", status_code=303)
 
 # ✅ **Маршрут для страницы входа**
 @app.get("/", response_class=HTMLResponse)
@@ -76,10 +76,11 @@ async def select_project(request: Request, project_name: str, _: str = Depends(r
     request.session["project_name"] = project_name
     return templates.TemplateResponse("server_selection.html", {"request": request, "project_name": project_name})
 
+
 # ✅ **Страница выбора сервера**
-@app.get("/server/{server_name}")
-async def select_server(request: Request, server_name: str, _: str = Depends(require_login)):
-    project_name = request.session.get("project_name", "Не выбран")
+@app.get("/server/{project_name}/{server_name}")
+async def select_server(request: Request, project_name: str, server_name: str, _: str = Depends(require_login)):
+    request.session["project_name"] = project_name
     request.session["server_name"] = server_name
     username = request.session.get("username", "Неизвестно")
 
