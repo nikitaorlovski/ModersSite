@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Выбор проекта и сервера</title>
+    <style>
+        body {
+    background-color: #1a1a2e;
+    background-image: url('/static/default.jpg');
+    background-size: cover;
+    background-position: center;
+    transition: background-image 0s, background-size 0.5s ease, background-position 0.5s ease;
+    color: white;
+    font-family: Arial, sans-serif;
+    display: flex;
+    height: 100vh;
+    margin: 0;
+}
+
+
+        /* --- Стили бокового меню (проекты) --- */
+        .sidebar {
+            width: 280px;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding-top: 20px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar h2 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #ffcc00;
+        }
+
+                body {
+            background-color: #1a1a2e;
+            background-image: url('/static/default.jpg'); /* Задний фон по умолчанию */
+            background-size: cover;
+            background-position: center;
+            transition: background 0.5s ease-in-out; /* Плавное изменение */
+        }
+
+
+                .project {
+            background: linear-gradient(45deg, #0052d4, #4364f7, #6fb1fc);
+            padding: 15px;
+            margin: 20px; /* Было 10px */
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            font-weight: bold;
+            transition: background 0.3s, transform 0.2s;
+            color: white;
+            text-align: center;
+        }
+
+
+        .project:hover {
+            background: linear-gradient(45deg, #003c8f, #2b5fd0, #5b9dfa);
+            transform: scale(1.05);
+        }
+
+        /* --- Основной контент (Выбор сервера) --- */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        /* --- Секция с логотипом и названием проекта --- */
+        .project-info {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px; /* Отступ между логотипом и названием */
+            margin-bottom: 40px; /* Двигаем вверх всю секцию */
+        }
+
+        .project-title {
+            font-size: 1.8rem; /* Сделаем крупнее */
+            font-weight: bold;
+            text-align: center;
+        }
+
+
+
+
+        .project-info img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 3px solid white;
+        }
+
+        .project-info h1 {
+            font-size: 1.8rem;
+            margin: 0;
+        }
+
+        .project-logo {
+            width: 200px;  /* Увеличенный размер логотипа */
+            height: 120px;
+            border-radius: 50%; /* Оставляем круглую форму */
+            object-fit: cover; /* Подгоняем картинку */
+        }
+        .project {
+  background: linear-gradient(45deg, #4facfe, #00f2fe);
+  transition: background 0.5s ease;
+}
+.project:hover {
+  background: linear-gradient(45deg, #43e97b, #38f9d7);
+}
+
+
+        /* --- Список серверов в одну строку --- */
+        .server-list {
+            display: flex;
+            gap: 30px; /* Увеличенный отступ между кнопками */
+            margin-top: 20px;
+        }
+
+
+        .server {
+            background: linear-gradient(45deg, #0047ab, #0052d4);
+            padding: 15px 25px;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.2s;
+            color: white;
+            text-align: center;
+        }
+
+        .server:hover {
+            background: linear-gradient(45deg, #00308f, #0047ab);
+            transform: scale(1.05);
+        }
+
+        /* --- Адаптивность (на мобилках сервера в столбик) --- */
+        @media (max-width: 800px) {
+            .server-list {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Левое боковое меню (Проекты) -->
+    <div class="sidebar">
+        <h2>Выберите проект</h2>
+        <div class="project" onclick="selectProject('GribLand')">GribLand</div>
+        <div class="project" onclick="selectProject('MCSkill')">MCSkill</div>
+        <div class="project" onclick="selectProject('StreamCraft')">StreamCraft</div>
+        <div class="project" onclick="selectProject('SimpleMinecraft')">SimpleMinecraft</div>
+        <div class="project" onclick="selectProject('GravityCraft')">GravityCraft</div>
+        <div class="project" onclick="selectProject('VimeWorld')">VimeWorld</div>
+        <div class="project" onclick="selectProject('Cristalix')">Cristalix</div>
+    </div>
+
+    <!-- Основной контент (Выбор сервера) -->
+    <div class="main-content">
+        <!-- Логотип проекта и название -->
+        <div id="project-info" class="project-info" style="display: none;">
+            <img id="project-logo" src="" alt="Логотип проекта">
+            <h1 id="server-title">Выберите проект слева</h1>
+        </div>
+
+        <!-- Список серверов -->
+        <div id="server-list" class="server-list" style="display: none;"></div>
+    </div>
+
+    <script>
+        // Карта логотипов проектов
+        const projectLogos = {
+            "GribLand": "/static/gribland.png",
+            "MCSkill": "/static/mcskill.png",
+            "StreamCraft": "/static/streamcraft.png",
+            "SimpleMinecraft": "/static/simpleminecraft.png",
+            "GravityCraft": "/static/gravitycraft.png",
+            "VimeWorld": "/static/vimeworld.png",
+            "Cristalix": "/static/cristalix.png"
+        };
+
+        // Список серверов для каждого проекта
+        const servers = {
+            "GribLand": ["OneBlock", "TechnoMagicRPG", "HiTech"],
+            "MCSkill": ["OneBlock", "TechnoMagicRPG", "HiTech"],
+            "StreamCraft": ["OneBlock", "TechnoMagicRPG", "HiTech"],
+            "SimpleMinecraft": ["OneBlock", "TechnoMagicRPG", "HiTech"],
+            "GravityCraft": ["OneBlock", "TechnoMagicRPG", "HiTech"],
+            "VimeWorld": ["OneBlock", "TechnoMagicRPG", "HiTech"],
+            "Cristalix": ["OneBlock", "TechnoMagicRPG"]
+        };
+
+        function selectProject(projectName) {
+            // Показываем заголовок и логотип
+            document.getElementById("server-title").innerText = `Выберите сервер для ${projectName}`;
+            document.getElementById("project-logo").src = projectLogos[projectName];
+            document.getElementById("project-info").style.display = "flex";
+
+            // Очищаем старый список серверов
+            let serverListDiv = document.getElementById("server-list");
+            serverListDiv.innerHTML = "";
+            serverListDiv.style.display = "flex"; // Делаем серверы в ряд
+
+            // Добавляем сервера текущего проекта
+            servers[projectName].forEach(server => {
+                let div = document.createElement("div");
+                div.className = "server";
+                div.innerText = server;
+                div.onclick = () => window.location.href = `/server/${server}`;
+                serverListDiv.appendChild(div);
+            });
+        }
+
+
+                // Переменная для хранения выбранного фона
+        let selectedBackground = "/static/default-bg.jpg";
+
+        // Карта фонов для серверов
+        const serverBackgrounds = {
+            "OneBlock": "/static/oneblock-bg.jpg",
+            "TechnoMagicRPG": "/static/technomagic-bg.jpg",
+            "HiTech": "/static/hitech-bg.jpg"
+        };
+
+        function selectProject(projectName) {
+    document.getElementById("server-title").innerText = `Выберите сервер для ${projectName}`;
+    document.getElementById("project-logo").src = projectLogos[projectName];
+    document.getElementById("project-info").style.display = "flex";
+
+    let serverListDiv = document.getElementById("server-list");
+    serverListDiv.innerHTML = "";
+    serverListDiv.style.display = "flex";
+
+    servers[projectName].forEach(server => {
+        let div = document.createElement("div");
+        div.className = "server";
+        div.innerText = server;
+
+        div.onmouseover = () => {
+            if (serverBackgrounds[server]) {
+                changeBackgroundSmoothly(serverBackgrounds[server]);
+            }
+        };
+
+        div.onclick = () => {
+            if (serverBackgrounds[server]) {
+                selectedBackground = serverBackgrounds[server];
+                changeBackgroundSmoothly(selectedBackground);
+            }
+            window.location.href = `/server/${projectName}/${server}`;
+        };
+
+        serverListDiv.appendChild(div);
+    });
+}
+
+        function changeBackgroundSmoothly(newImageUrl) {
+    const img = new Image();
+    img.src = newImageUrl;
+
+    img.onload = () => {
+        document.body.style.backgroundImage = `url(${newImageUrl})`;
+    };
+}
+
+
+    </script>
+
+</body>
+</html>

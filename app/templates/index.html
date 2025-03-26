@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <title>Вход в панель активности модераторов</title>
+    <style>
+           body {
+    background: url('static/1.jpg') no-repeat center center;
+    background-size: cover;
+    color: white;
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    text-align: center;
+    overflow: hidden;
+
+    /* УБИРАЕМ фиксированность */
+    background-attachment: scroll;
+    background-position: 50% 50%;
+    transition: background-position 0.1s ease-out;
+}
+        /* Объемная надпись MetaLabs */
+        .parallax-title {
+            font-size: 5rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            background: linear-gradient(45deg, #ff7e00, #ffcc00, #ff7e00);
+             text-stroke: 2px rgba(0, 0, 0, 0.8);
+            -webkit-text-stroke: 2px rgba(0, 0, 0, 0.8);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            text-shadow: 4px 4px 10px rgba(255, 255, 255, 0.3);
+            position: absolute;
+            top: 5%;
+            z-index: 10;
+            transition: transform 0.1s ease-out;
+            user-select: none
+        }
+
+        /* Контейнер авторизации */
+        .login-container {
+            background-color: rgba(0, 0, 0, 0.6);
+            padding: 35px;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.7);
+            z-index: 20;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 400px;
+        }
+
+        input {
+            width: calc(100% - 20px);
+            padding: 12px;
+            margin: 10px 0;
+            font-size: 1rem;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            text-align: center;
+            outline: none;
+            transition: background 0.3s ease;
+        }
+
+        input:focus {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .input-container {
+            position: relative;
+            width: 100%;
+        }
+
+        /* Стиль плейсхолдера */
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 16px;
+        }
+
+        /* Заголовок "Отдайте душу" */
+        h2 {
+            font-family: 'Lobster', cursive; /* Применяем шрифт Poppins */
+            font-size: 2rem;
+            font-weight: 300; /* Полужирный */
+            color: #fff; /* Белый цвет текста */
+            margin-bottom: 20px; /* Отступ снизу */
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Легкая тень для читаемости */
+            user-select: none
+        }
+
+
+                /* Кнопка входа */
+        button {
+            width: 70%; /* Шире кнопка */
+            padding: 12px 20px;
+            margin-top: 10px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, rgba(255, 140, 0, 0.8), rgba(255, 200, 55, 0.8)); /* Градиент оранжевого */
+            color: white;
+            border: none;
+            border-radius: 25px; /* Делаем кнопку более закругленной */
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 4px 10px rgba(255, 140, 0, 0.3);
+        }
+
+        button:hover {
+            background: linear-gradient(45deg, rgba(255, 160, 40, 0.9), rgba(255, 220, 90, 0.9)); /* Светлее при наведении */
+            transform: scale(1.05);
+        }
+
+              /* Косая надпись над MetaLabs */
+        .tilted-text {
+            position: absolute;
+            top: 15%; /* Выше MetaLabs */
+            left: 65%;
+            transform: translateX(-50%) rotate(-20deg);
+            font-size: 1.7rem;
+            font-weight: bold;
+            font-family: "Poppins", "Comic Sans MS", sans-serif;
+            color: #c770ff; /* Неоновый голубой */
+            text-shadow: 3px 3px 10px rgba(186, 85, 211, 0.8);
+            background: rgba(0, 0, 0, 0.0);
+            padding: 5px 15px;
+            border-radius: 10px;
+            white-space: nowrap;
+            animation: pulse 2s infinite alternate ease-in-out;
+            z-index: 100; /* Повышаем уровень слоя */
+            -webkit-text-stroke: 2px rgba(0, 0, 0, 0.9); /* Темная обводка */
+            user-select: none
+        }
+
+        /* Анимация пульсации */
+        @keyframes pulse {
+            0% {
+                transform: translateX(-50%) rotate(-20deg) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translateX(-50%) rotate(-20deg) scale(1.1);
+                opacity: 0.8;
+            }
+        }
+
+
+    </style>
+</head>
+<body>
+<!-- Косая фиолетовая надпись -->
+<div class="tilted-text">А ты отыграл онлайн?</div>
+<!-- Объемная надпись MetaLabs -->
+<h1 class="parallax-title">MetaLabs</h1>
+
+<!-- Форма входа -->
+<div class="login-container">
+    <h2>Отдайте душу</h2>
+
+    <form action="/login" method="post">
+        <input type="text" id="username" name="username" placeholder="Логин" required>
+        <input type="password" id="password" name="password" placeholder="Пароль" required>
+
+        <button type="submit">Отдать</button>
+        {% if error is defined and error %}
+            <p style="color: #ff5e5e; margin-top: 10px;">{{ error }}</p>
+        {% endif %}
+
+
+    </form>
+</div>
+
+<!-- JavaScript для параллакса -->
+<script>
+    document.addEventListener("mousemove", (e) => {
+        const title = document.querySelector(".parallax-title");
+
+        // Параллакс текста (название)
+        const moveX = (e.clientX - window.innerWidth / 2) * 0.01;
+        const moveY = (e.clientY - window.innerHeight / 2) * 0.01;
+        title.style.transform = `translate(${moveX}px, ${moveY}px)`;
+
+        // Параллакс фона (движение background-position)
+        const x = (e.clientX / window.innerWidth - 0.5) * 10;  // чувствительность
+        const y = (e.clientY / window.innerHeight - 0.5) * 10;
+
+        document.body.style.backgroundPosition = `${50 + x}% ${50 + y}%`;
+    });
+</script>
+
+
+
+<script>
+    // Массив возможных фраз
+    const phrases = [
+        "А ты отыграл онлайн?",
+        "Ты точно заходил сегодня?",
+        "Сколько часов у тебя?",
+        "Пора обновить свой рекорд!",
+        "P.S Killchik Industry"
+    ];
+
+    // Выбираем случайную фразу
+    const randomPhrase = phrases[Math.floor(Math.random() * phrases.length)];
+
+    // Вставляем в блок с текстом
+    document.addEventListener("DOMContentLoaded", function() {
+        document.querySelector(".tilted-text").innerText = randomPhrase;
+    });
+</script>
+</body>
+</html>
