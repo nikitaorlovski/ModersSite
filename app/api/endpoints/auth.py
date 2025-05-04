@@ -3,13 +3,19 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from app.auth import authenticate_user
 from app.core.exceptions import AuthenticationError
+from fastapi import HTTPException
 
 router = APIRouter()
 templates = Jinja2Templates(directory="app/templates")
 
 def require_login(request: Request):
     if not request.session.get("username"):
-        return RedirectResponse("/", status_code=303)
+        raise HTTPException(
+            status_code=302,
+            detail="Необходима авторизация",
+            headers={"Location": "/"}
+        )
+    return request.session.get("username")
 
 @router.get("/", response_class=HTMLResponse)
 async def login_page(request: Request):

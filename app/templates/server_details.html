@@ -13,25 +13,54 @@
         }
 
         body {
-            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
-            background-size: 400% 400%;
-            animation: gradientBG 10s ease infinite;
-            color: white;
-            display: flex;
-            justify-content: flex-start;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            flex-direction: column;
-            text-align: center;
-            padding-top: 20px;
-        }
+    background-color: #1c1c2b;
+    background-image: 
+        radial-gradient(circle at 20% 30%, rgba(255,255,255,0.015) 0%, transparent 25%),
+        radial-gradient(circle at 80% 70%, rgba(255,255,255,0.01) 0%, transparent 30%);
+    background-repeat: no-repeat;
+    background-size: cover;
+    color: white;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    flex-direction: column;
+    text-align: center;
+    padding-top: 20px;
+}
 
-        /* Анимация фона */
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+
+        /* Кнопка "Назад" */
+        .back-btn {
+            position: fixed;
+            top: 15px;
+            left: 65px; /* Расположение справа от меню */
+            background: linear-gradient(45deg, #4facfe, #00f2fe);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            text-decoration: none;
+            z-index: 999;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .back-btn:hover {
+            background: linear-gradient(45deg, #43e97b, #38f9d7);
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .back-btn:before {
+            content: "←";
+            margin-right: 8px;
+            font-size: 18px;
         }
 
         /* Заголовки */
@@ -380,14 +409,26 @@
             }
         }
 
-        .activity-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 20px;
-            padding: 20px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
+  .activity-grid {
+    
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 15px;
+    text-align: left;
+    align-items: flex-start;
+    margin-left: 0; /* <-- Сдвиг к левому краю */
+    padding-left: 0; /* <-- Убедимся, что нет отступа */
+}
+
+
+#activity-container {
+    padding-left: 0;
+    margin-left: 0;
+}
+
+
+
 
         .activity-card {
             background: rgba(255, 255, 255, 0.1);
@@ -793,9 +834,44 @@
             background: rgba(255, 255, 255, 0.2);
             transform: rotate(180deg);
         }
+
+        /* Стили для контейнера активности */
+        .activity-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+            text-align: center;
+        }
+
+        /* Карточка модератора */
+        .activity-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 8px rgba(255, 255, 255, 0.2);
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Топ-активность */
+        #top-activity {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+        }
     </style>
 </head>
 <body>
+    <!-- Кнопка для открытия меню -->
+    <button class="menu-btn" onclick="openMenu()">☰</button>
+    
     <div class="server-header">
         <h1>{{ project_name }}</h1>
         <div class="server-info">
@@ -850,12 +926,11 @@
         </div>
     </div>
 
-<!-- Кнопка для открытия меню -->
-<button class="menu-btn" onclick="openMenu()">☰</button>
-
 <!-- Боковое меню -->
 <div class="sidebar" id="sidebar">
+    <a href="/projects" style="position: absolute; top: 15px; left: 15px; padding: 10px; background: none; border-radius: 8px; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; margin: 0; font-size: 24px; color: #ffd700;">←</a>
     <button class="close-btn" onclick="closeMenu()">☰</button>
+    <div style="padding-top: 40px;"></div>
     <a href="#" onclick="showProfile()"> Профиль</a>
     <a href="#" onclick="loadModerators()">📋 Список состава</a>
     <a href="#" onclick="loadModeratorActivity()">📊 Активность </a>
@@ -1298,7 +1373,11 @@
 
 <!-- Контейнер для активности модераторов -->
 <div id="activity-container" style="display: none; margin-top: 20px;">
-    <div id="activity-list" class="activity-grid"></div>
+    <div id="top-activity" class="activity-grid" style="margin-bottom: 20px;">
+        <h3>Топ 3 модераторов по онлайну</h3>
+        <div id="top-activity-list" class="activity-grid"></div>
+    </div>
+    <div id="activity-list" class="activity-grid" style="max-height: 400px; overflow-y: auto;"></div>
 </div>
 
 <!-- Контейнер для проверки онлайна -->
@@ -1313,41 +1392,41 @@
 </div>
 
 <style>
-            /* Сетка активности (3 колонки) */
-        .activity-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 15px;
-            margin-top: 15px;
-            text-align: center;
-        }
+    /* Сетка активности (3 колонки) */
+    .activity-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 15px;
+        margin-top: 15px;
+        text-align: center;
+    }
 
-        /* Карточка модератора */
-        .activity-card {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 10px;
-            border-radius: 8px;
-            box-shadow: 0px 0px 8px rgba(255, 255, 255, 0.2);
-            font-size: 1.1rem;
-            font-weight: bold;
-            color: #ffffff;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
+    /* Карточка модератора */
+    .activity-card {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 10px;
+        border-radius: 8px;
+        box-shadow: 0px 0px 8px rgba(255, 255, 255, 0.2);
+        font-size: 1.1rem;
+        font-weight: bold;
+        color: #ffffff;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
 
-        /* Имя модератора */
-        .activity-card .mod-name {
-            font-size: 1.3rem;
-            color: #FFD700;
-        }
+    /* Имя модератора */
+    .activity-card .mod-name {
+        font-size: 1.3rem;
+        color: #FFD700;
+    }
 
-        /* Часы онлайна */
-        .activity-card .mod-hours {
-            font-size: 1.1rem;
-            color: #1E90FF;
-        }
+    /* Часы онлайна */
+    .activity-card .mod-hours {
+        font-size: 1.1rem;
+        color: #1E90FF;
+    }
 
     /* Стили для контейнера проверки онлайна */
     .input-group {
@@ -1400,7 +1479,9 @@
         hideAllContainers();
         let activityContainer = document.getElementById("activity-container");
         activityContainer.style.display = "block";
+        let topActivityList = document.getElementById("top-activity-list");
         let activityList = document.getElementById("activity-list");
+        topActivityList.innerHTML = "<p>Загружаем данные...</p>";
         activityList.innerHTML = "<p>Загружаем данные...</p>";
         closeMenu();
 
@@ -1409,6 +1490,7 @@
             let data = await response.json();
 
             if (data.error) {
+                topActivityList.innerHTML = `<p style="color:red;">Ошибка: ${data.error}</p>`;
                 activityList.innerHTML = `<p style="color:red;">Ошибка: ${data.error}</p>`;
                 return;
             }
@@ -1416,8 +1498,10 @@
             // Сортируем по часам (от большего к меньшему)
             data.activity.sort((a, b) => b.hours - a.hours);
 
-            activityList.innerHTML = "";
-            data.activity.forEach(({ nickname, hours }, index) => {
+            // Отображаем топ-3 модераторов
+            const topThree = data.activity.slice(0, 3);
+            topActivityList.innerHTML = "";
+            topThree.forEach(({ nickname, hours }, index) => {
                 let modCard = document.createElement("div");
                 modCard.className = "activity-card";
                 modCard.innerHTML = `
@@ -1425,10 +1509,23 @@
                     <div class="mod-name">${nickname}</div>
                     <div class="mod-hours">🕒 ${hours}</div>
                 `;
+                topActivityList.appendChild(modCard);
+            });
+
+            // Отображаем остальных модераторов
+            activityList.innerHTML = "";
+            data.activity.slice(3).forEach(({ nickname, hours }) => {
+                let modCard = document.createElement("div");
+                modCard.className = "activity-card";
+                modCard.innerHTML = `
+                    <div class="mod-name">${nickname}</div>
+                    <div class="mod-hours">🕒 ${hours}</div>
+                `;
                 activityList.appendChild(modCard);
             });
 
         } catch (error) {
+            topActivityList.innerHTML = `<p style="color:red;">Ошибка загрузки данных.</p>`;
             activityList.innerHTML = `<p style="color:red;">Ошибка загрузки данных.</p>`;
         }
     }

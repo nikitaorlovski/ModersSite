@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="https://s3.gribland.net/uploads/icons/og_image.png" type="image/png">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-    <title>Вход в панель активности модераторов</title>
+    <title>Панель активности модераторов</title>
     <style>
            body {
     background: url('static/1.jpg') no-repeat center center;
@@ -179,23 +180,31 @@
     </form>
 </div>
 
-<!-- JavaScript для параллакса -->
 <script>
+    const title = document.querySelector(".parallax-title");
+    let mouseX = 0;
+    let mouseY = 0;
+    let currentX = 0;
+    let currentY = 0;
+
     document.addEventListener("mousemove", (e) => {
-        const title = document.querySelector(".parallax-title");
-
-        // Параллакс текста (название)
-        const moveX = (e.clientX - window.innerWidth / 2) * 0.01;
-        const moveY = (e.clientY - window.innerHeight / 2) * 0.01;
-        title.style.transform = `translate(${moveX}px, ${moveY}px)`;
-
-        // Параллакс фона (движение background-position)
-        const x = (e.clientX / window.innerWidth - 0.5) * 10;  // чувствительность
-        const y = (e.clientY / window.innerHeight - 0.5) * 10;
-
-        document.body.style.backgroundPosition = `${50 + x}% ${50 + y}%`;
+        mouseX = (e.clientX - window.innerWidth / 2) * 0.02;
+        mouseY = (e.clientY - window.innerHeight / 2) * 0.02;
     });
+
+    function animate() {
+        // Плавное приближение к целевым координатам
+        currentX += (mouseX - currentX) * 0.1;
+        currentY += (mouseY - currentY) * 0.1;
+        
+        title.style.transform = `translate(${currentX}px, ${currentY}px)`;
+
+        requestAnimationFrame(animate);
+    }
+
+    animate();
 </script>
+
 
 
 
