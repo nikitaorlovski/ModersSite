@@ -6,6 +6,7 @@ fake_users_db = {
     "killchik": {"username": "killchik", "hashed_password": hash_password("adminы")},
     "admin": {"username": "admin", "hashed_password": hash_password("password123")},
     "FearTerror": {"username": "FearTerror", "hashed_password": hash_password("admin")},
+    "Seyllon": {"username": "Seyllon", "hashed_password": hash_password("AdminSeyllon")},
     "Tori_sss": {"username": "Tori_sss", "hashed_password": hash_password("admin")},
 }
 
