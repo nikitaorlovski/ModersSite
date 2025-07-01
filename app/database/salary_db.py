@@ -135,6 +135,20 @@ def get_salary(nickname, project, server, month=None):
         }
     return None
 
+
+def delete_salary_record(nickname, project, server, month):
+    try:
+        conn = sqlite3.connect(DB_PATH)
+        cursor = conn.cursor()
+        cursor.execute('''DELETE FROM salaries WHERE nickname = ? AND project = ? AND server = ? AND month = ?''',
+                       (nickname, project, server, month))
+        conn.commit()
+        conn.close()
+        return True
+    except Exception as e:
+        print("Ошибка удаления:", e)
+        return False
+
 def get_all_salaries(project, server, month=None):
     """Получение всех зарплат за конкретный месяц"""
     conn = sqlite3.connect(DB_PATH)

@@ -7,14 +7,112 @@ from app.services.telegram import send_salary_report
 from datetime import datetime
 from pydantic import BaseModel
 from typing import Optional
+from app.core.config import get_settings
 from ...database.salary_db import save_salary, get_salary, get_all_salaries, init_db
 
-# Инициализируем базу данных при запуске
 init_db()
 
 router = APIRouter()
 templates = Jinja2Templates(directory="app/templates")
 metalabs_service = MetalabsService()
+
+@router.post("/delete_salary")
+def delete_salary(payload: dict):
+    from app.database.salary_db import delete_salary_record
+    success = delete_salary_record(
+        payload["nickname"],
+        payload["project"],
+        payload["server"],
+        payload["month"]
+    )
+    return {"success": success}
+
+@router.post("/get_salaries")
+def get_salaries(payload: dict):
+    project = payload.get("project")
+    server = payload.get("server")
+    month = payload.get("month")
+
+    return get_all_salaries(project, server, month)
+@router.post("/send_full_salary_report")
+async def send_full_salary_report(payload: dict):
+    project = payload.get("project")
+    server = payload.get("server")
+    month = payload.get("month")
+
+    salaries = get_all_salaries(project, server, month)
+    if not salaries:
+        return {"error": "Нет зарплат для отправки"}
+
+    # Разделяем
+    psj_staff = [s for s in salaries if s.get("role") == "ПСЖ"]
+    active_staff = [s for s in salaries if s.get("role") != "ПСЖ"]
+
+    # Приоритет по ролям
+    role_priority = {
+        "Гл.модератор": 1,
+        "Ст.модератор": 2,
+        "Модератор": 3,
+        "Хелпер": 4,
+        "Стажер": 5
+    }
+
+    def sort_key(staff):
+        return role_priority.get(staff.get("role"), 999), staff.get("nickname", "")
+
+    active_staff.sort(key=sort_key)
+
+    # Сообщение
+    header = f"\nСервер {server}\nМесяц {month}\n\n"
+
+    active_lines = [
+        f"{s['role']} {s['nickname']} — {int(s['total_salary'])} рубинов"
+        for s in active_staff
+    ]
+
+    psj_lines = [
+        f"{s['nickname']} — {int(s['total_salary'])} рубинов"
+        for s in psj_staff
+    ]
+
+    # Топ по вопросам
+    top_questions = sorted(
+        [s for s in active_staff if s.get("questions_top") in [1, 2, 3]],
+        key=lambda x: x["questions_top"]
+    )
+
+    question_bonus_lines = [
+        f"{s['nickname']} — +{15 if s['questions_top']==1 else 10 if s['questions_top']==2 else 5}% к зарплате"
+        for s in top_questions
+    ]
+
+    # Топ по онлайну
+    top_online = sorted(
+        [s for s in active_staff if s.get("online_top") in [1, 2, 3]],
+        key=lambda x: x["online_top"]
+    )
+
+    online_bonus_lines = [
+        f"{s['nickname']} — +{15 if s['online_top']==1 else 10 if s['online_top']==2 else 5}% к зарплате"
+        for s in top_online
+    ]
+
+    # Итоговое сообщение
+    full_message = header + "\n".join(active_lines)
+
+    if question_bonus_lines:
+        full_message += "\n\nТОП ВОПРОС-ОТВЕТ:\n\n" + "\n".join(question_bonus_lines)
+
+    if online_bonus_lines:
+        full_message += "\n\nТОП ОНЛАЙН:\n\n" + "\n".join(online_bonus_lines)
+
+    if psj_lines:
+        full_message += "\n\nПСЖ:\n" + "\n".join(psj_lines)
+
+    # Отправка
+    from app.services.telegram import send_custom_message
+    success = await send_custom_message(full_message)
+    return {"success": success}
 
 class SalaryData(BaseModel):
     nickname: str
@@ -143,20 +241,30 @@ async def get_staff(request: Request, _: str = Depends(require_login)):
     return {"body": {"users": users}}
 
 @router.get("/check_online")
-async def check_online(request: Request, nickname: str = Query(...), _: str = Depends(require_login)):
-    project_name = request.session.get("project_name", "Не выбран")
-    server_name = request.session.get("server_name", "Не выбран")
-    
+async def check_online(
+    request: Request,
+    nickname: str = Query(...),
+    start_date: Optional[str] = Query(None),
+    end_date: Optional[str] = Query(None),
+    _: str = Depends(require_login)
+):
+    project_name = request.session.get("project_name")
+    server_name = request.session.get("server_name")
+
     if not project_name or not server_name:
         return {"error": "Проект или сервер не выбраны. Пожалуйста, выберите заново."}
 
-    # Получаем текущую дату
-    current_date = datetime.now()
-    start_date = current_date.strftime("%Y-%m-%d")
-    end_date = current_date.strftime("%Y-%m-%d")
+    # Если даты не переданы — подставляем текущую дату
+    if not start_date or not end_date:
+        today = datetime.now()
+        start_date = today.strftime("%Y-%m-%d")
+        end_date = today.strftime("%Y-%m-%d")
 
-    result = await metalabs_service.get_playtime_period(project_name, server_name, nickname, start_date, end_date)
-    return result 
+    result = await metalabs_service.get_playtime_period(
+        project_name, server_name, nickname, start_date, end_date
+    )
+    return result
+
 
 @router.post("/save_salary")
 async def save_staff_salary(data: dict):

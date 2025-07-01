@@ -637,8 +637,9 @@
 
         /* Стили для модального окна зарплаты */
         .salary-modal-content {
-            width: 1000px;
+            width: 3400px;
             max-height: 90vh;
+            max-width: none; /* Убираем ограничение */
             background: linear-gradient(135deg, rgba(26, 26, 46, 0.95), rgba(46, 26, 46, 0.95));
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 215, 0, 0.1);
@@ -671,18 +672,23 @@
         }
 
         .salary-header {
-            position: sticky;
-            top: 0;
-            z-index: 10;
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            padding: 15px 25px;
-            background: linear-gradient(135deg, rgba(26, 26, 46, 0.98), rgba(46, 26, 46, 0.98));
-            backdrop-filter: blur(10px);
-            border-radius: 15px;
-            margin-bottom: 0;
-        }
+    position: fixed;
+    top: 20px; /* или сколько нужно отступ от верха */
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    width: 90%;
+    gap: 20px;
+    max-width: 1000px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 25px;
+    background: linear-gradient(135deg, rgba(26, 26, 46, 0.98), rgba(46, 26, 46, 0.98));
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
 
         .modal-staff-skin {
             width: 64px;
@@ -710,6 +716,7 @@
             grid-template-columns: repeat(2, 1fr);
             gap: 15px 30px;
             padding: 0;
+            margin-top: 120px;
         }
 
         .form-group {
@@ -1190,30 +1197,60 @@
         const modal = document.getElementById('salary-modal');
         modal.classList.remove('show');
     }
+function getMonthData(isPrevious) {
+    const now = new Date();
+    let year = now.getFullYear();
+    let month = now.getMonth() + 1;
 
-    async function updateOnlineHours(nickname) {
-        const monthSelect = document.getElementById('salary-month');
-        const isPrevious = monthSelect.value === 'previous';
-        const monthData = getMonthData(isPrevious);
-        
-        const startDate = `${monthData.year}-${String(monthData.month).padStart(2, '0')}-01`;
-        const lastDay = new Date(monthData.year, monthData.month, 0).getDate();
-        const endDate = `${monthData.year}-${String(monthData.month).padStart(2, '0')}-${lastDay}`;
-
-        try {
-            const response = await fetch(`/check_online?nickname=${encodeURIComponent(nickname)}&start_date=${startDate}&end_date=${endDate}`);
-            const data = await response.json();
-
-            if (!data.error) {
-                const onlineHoursInput = document.getElementById('online_hours');
-                const timeStr = data.time;
-                const hours = parseInt(timeStr.split('ч')[0]);
-                onlineHoursInput.value = hours;
-            }
-        } catch (error) {
-            console.error('Error updating online hours:', error);
+    if (isPrevious) {
+        month--;
+        if (month === 0) {
+            month = 12;
+            year--;
         }
     }
+
+    return { year, month };
+}
+
+    async function updateOnlineHours(nickname) {
+    const monthSelect = document.getElementById('salary-month');
+    const isPrevious = monthSelect.value === 'previous';
+    const { year, month } = getMonthData(isPrevious);
+
+    const startDate = `${year}-${String(month).padStart(2, '0')}-01`;
+    const lastDay = new Date(year, month, 0).getDate();
+    const endDate = `${year}-${String(month).padStart(2, '0')}-${lastDay}`;
+
+    console.log(`🔍 [updateOnlineHours] Nickname: ${nickname}`);
+    console.log(`📅 Start Date: ${startDate}`);
+    console.log(`📅 End Date: ${endDate}`);
+
+    try {
+        const response = await fetch(`/check_online?nickname=${encodeURIComponent(nickname)}&start_date=${startDate}&end_date=${endDate}`);
+        const data = await response.json();
+
+        console.log('📦 Response:', data);
+
+        const onlineHoursInput = document.getElementById('online_hours');
+
+        if (!data.error && typeof data.time === 'string') {
+            const match = data.time.match(/(\d+)\s*ч/);  // ищем число перед "ч"
+            console.log('⏱️ Match:', match);
+            const hours = match ? parseInt(match[1], 10) : 0;
+            console.log('✅ Parsed Hours:', hours);
+            onlineHoursInput.value = hours;
+        } else {
+            console.warn('⚠️ Нет поля "time" или ошибка:', data);
+            onlineHoursInput.value = 0;
+        }
+    } catch (error) {
+        console.error('❌ Ошибка получения онлайна:', error);
+        document.getElementById('online_hours').value = 0;
+    }
+}
+
+
 
     // Обработчик изменения месяца
     document.getElementById('salary-month').addEventListener('change', function() {
@@ -1245,46 +1282,49 @@
     }
 
     async function confirmSalary() {
-        try {
-            if (!window.currentSalaryData) {
-                throw new Error('Нет данных для сохранения');
-            }
-
-            const projectName = document.querySelector('.server-header h1').textContent.trim();
-            const serverName = document.querySelector('.server-header .info-value').textContent.trim();
-            
-            console.log('Project:', projectName);
-            console.log('Server:', serverName);
-            console.log('Current salary data:', window.currentSalaryData);
-            
-            const salaryData = {
-                ...window.currentSalaryData,
-                project: projectName,
-                server: serverName
-            };
-            
-            console.log('Final salary data:', salaryData);
-            
-            const response = await fetch('/save_salary', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(salaryData)
-            });
-            
-            if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(errorText);
-            }
-            
-            showNotification('Зарплата успешно сохранена!');
-            document.getElementById('send-telegram').style.display = 'inline-block';
-        } catch (error) {
-            console.error('Error saving salary:', error);
-            showNotification('Ошибка при сохранении: ' + error.message);
+    try {
+        if (!window.currentSalaryData) {
+            throw new Error('Нет данных для сохранения');
         }
+
+        const projectName = document.querySelector('.server-header h1').textContent.trim();
+        const serverName = document.querySelector('.server-header .info-value').textContent.trim();
+
+        const role = document.getElementById('modal-staff-role').textContent.trim();
+
+        // Определяем статус
+        const status = (role === 'ПСЖ') ? 'ПСЖ' : 'Актив';
+
+        const salaryData = {
+            ...window.currentSalaryData,
+            project: projectName,
+            server: serverName,
+            status: status  // добавляем статус в итоговый объект
+        };
+
+        console.log('Final salary data:', salaryData);
+
+        const response = await fetch('/save_salary', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(salaryData)
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(errorText);
+        }
+
+        showNotification('Зарплата успешно сохранена!');
+        document.getElementById('send-telegram').style.display = 'inline-block';
+    } catch (error) {
+        console.error('Error saving salary:', error);
+        showNotification('Ошибка при сохранении: ' + error.message);
     }
+}
+
 
     async function sendToTelegram() {
         const nickname = document.getElementById('nickname').value;
@@ -1472,6 +1512,25 @@
     .input-field::placeholder {
         color: rgba(255, 255, 255, 0.7);
     }
+    .action-btn-cancel-btn {
+  position: absolute;
+  top: 20px;
+  right: 30px;
+  background: transparent;
+  border: none;
+  font-size: 22px;
+  color: white;
+  cursor: pointer;
+  z-index: 1001;
+  padding: 5px 10px;
+  border-radius: 5px;
+  transition: background 0.2s ease;
+}
+
+.action-btn-cancel-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffd700;
+}
 </style>
 
 <script>
@@ -1620,6 +1679,7 @@
             height: 100vh;
             background: rgba(0, 0, 0, 0.5);
             backdrop-filter: blur(5px);
+            overflow: visible; /* 🔥 */
         }
 
         .modal.show {
@@ -1664,6 +1724,79 @@
         button:hover {
             background: #FFC107;
         }
+        /* Модальное окно */
+.modal-container {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 1000;
+    background-color: rgba(0, 0, 0, 0.7);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background: #1c1c2e;
+    border-radius: 12px;
+    padding: 20px 30px;
+    width: 90%;
+    max-width: 1000px;
+    max-height: 90vh;
+    overflow-y: auto;
+    color: white;
+    box-shadow: 0 0 20px rgba(255, 255, 0, 0.2);
+}
+
+
+.styled-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    font-size: 14px;
+    background-color: #2c2c3e;
+    border-radius: 10px;
+    overflow: hidden;
+    table-layout: auto;
+    box-sizing: border-box;
+}
+
+.styled-table th, .styled-table td {
+    padding: 10px;
+    text-align: center;
+}
+
+.styled-table th {
+    background-color: #3d3d5c;
+    font-weight: bold;
+}
+
+.styled-table td {
+    border-bottom: 1px solid #444;
+}
+
+.modal-content .action-btn {
+    margin: 10px 5px 0 0;
+}
+.report-controls {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.report-controls label {
+  margin-right: 10px;
+  font-weight: 500;
+  color: #ddd;
+}
+
+.report-select {
+  background-color: #2e2e3f;
+  border: 1px solid #444;
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 6px;
+}
 
 </style>
 
@@ -1707,15 +1840,188 @@
 
         closeSplaytimeModal();
     }
-</script>
+    function openSalaryReport() {
+  document.getElementById("report-modal").style.display = "flex";
+  refreshSalaryReport();  // Загружаем данные
+}
 
+async function refreshSalaryReport() {
+    const project = "{{ project_name }}";
+    const server = "{{ server_name }}";
+    const monthSelect = document.getElementById('report-month');
+    const selectedMonth = monthSelect.value;
+
+    const date = new Date();
+    let month, year;
+    if (selectedMonth === 'current') {
+        month = (date.getMonth() + 1).toString().padStart(2, '0');
+        year = date.getFullYear();
+    } else {
+        month = (date.getMonth() === 0 ? 12 : date.getMonth()).toString().padStart(2, '0');
+        year = date.getMonth() === 0 ? date.getFullYear() - 1 : date.getFullYear();
+    }
+
+    const monthStr = `${year}-${month}`;
+
+    const response = await fetch("/get_salaries", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ project, server, month: monthStr })
+    });
+
+    const salaries = await response.json();
+    const tbody = document.querySelector("#salary-report-table tbody");
+    tbody.innerHTML = "";
+
+    if (!salaries || !salaries.length) {
+        tbody.innerHTML = `<tr><td colspan="13">Нет данных за выбранный месяц</td></tr>`;
+        return;
+    }
+
+    salaries.forEach(s => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+            <td contenteditable="true">${s.nickname}</td>
+            <td contenteditable="true">${s.role}</td>
+            <td contenteditable="true">${s.online_hours}</td>
+            <td contenteditable="true">${s.questions}</td>
+            <td contenteditable="true">${s.complaints}</td>
+            <td contenteditable="true">${s.severe_complaints}</td>
+            <td contenteditable="true">${s.attached_moderators}</td>
+            <td contenteditable="true">${s.interviews}</td>
+            <td contenteditable="true">${s.online_top ?? ""}</td>
+            <td contenteditable="true">${s.questions_top ?? ""}</td>
+            <td contenteditable="true">${s.gma_review ?? ""}</td>
+            <td contenteditable="true">${s.total_salary}</td>
+            <td>
+                <button onclick="deleteSalary('${s.nickname}', '${s.project}', '${s.server}', '${s.month}', this)">🗑</button>
+
+            </td>
+        `;
+        tbody.appendChild(row);
+    });
+}
+
+async function deleteSalary(nickname, project, server, month, buttonElement) {
+    const confirmed = confirm(`Удалить запись ${nickname}?`);
+    if (!confirmed) return;
+
+    const res = await fetch("/delete_salary", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nickname, project, server, month })
+    });
+
+    const result = await res.json();
+    if (result.success) {
+        showNotification("Запись удалена");
+
+        // Удаляем строку из DOM
+        const row = buttonElement.closest("tr");
+        if (row) row.remove();
+    } else {
+        showNotification("Ошибка при удалении");
+    }
+}
+
+function openSalaryReport() {
+    document.getElementById("report-modal").style.display = "flex";
+    refreshSalaryReport(); // обязательно вызываем
+}
+
+
+function closeModal(id) {
+    document.getElementById(id).style.display = "none";
+}
+function openManualSalaryForm() {
+    const modal = document.getElementById('salary-modal');
+    const staffName = document.getElementById('modal-staff-name');
+    const staffRole = document.getElementById('modal-staff-role');
+    const staffSkin = document.getElementById('modal-staff-skin');
+    const nicknameInput = document.getElementById('nickname');
+
+    // Сброс и подготовка
+    clearSalaryForm();
+
+    // Запрашиваем ник
+    const nickname = prompt("Введите никнейм модератора (ПСЖ):");
+    if (!nickname) return;
+
+    staffName.textContent = nickname;
+    staffRole.textContent = "ПСЖ";
+    staffSkin.src = `https://meta-api.metalabs.work/api/v3/users/skins/{{ project_name }}/head/${nickname}`;
+    nicknameInput.value = nickname;
+
+    // Показываем все поля
+    document.getElementById('severe_complaints_group').style.display = 'block';
+    document.getElementById('interviews_group').style.display = 'block';
+
+    // Открыть модал
+    modal.classList.add('show');
+}
+
+</script>
+<div id="report-modal" class="modal-container">
+  <div class="modal-content" style="max-width: 2500px;">
+      <button onclick="closeModal('report-modal')" class="action-btn-cancel-btn">✕</button>
+    <h2 style="text-align:center;">📄 Отчёт по зарплатам</h2>
+      <div class="report-controls">
+  <label for="report-month">Месяц:</label>
+  <select id="report-month" onchange="refreshSalaryReport()" class="report-select">
+    <option value="current">Текущий</option>
+    <option value="previous">Прошлый</option>
+  </select>
+</div>
+    <table id="salary-report-table" class="styled-table">
+      <thead>
+  <tr>
+    <th>Ник</th>
+    <th>Роль</th>
+    <th>Онлайн</th>
+    <th>Вопросы</th>
+    <th>Жалобы</th>
+    <th>Строгие</th>
+    <th>Прикр.</th>
+    <th>Собесы</th>
+    <th>Топ Онлайн</th>
+    <th>Топ Вопросы</th>
+    <th>Рецензия</th>
+    <th>Зарплата</th>
+    <th>Действия</th>
+  </tr>
+</thead>
+
+      <tbody></tbody>
+    </table>
+    <div style="text-align: center;">
+      <button onclick="sendSalaryReportToTelegram()" class="action-btn send-btn">📤 Отправить в Telegram</button>
+
+    </div>
+  </div>
+</div>
 <!-- Контейнер для расчета зарплат -->
 <div id="salary-container" style="display: none; margin-top: 20px;">
+    <button onclick="openSalaryReport()" class="action-btn view-btn">📄 Отчёт</button>
+
 
     <div id="staff-list" class="staff-grid"></div>
+    <div class="staff-card add-manual-card" onclick="openManualSalaryForm()">
+    <div class="staff-info" style="text-align: center;">
+        <div class="staff-name" style="font-size: 24px;">➕</div>
+        <div class="staff-role">Добавить модератора в отчет</div>
+    </div>
+</div>
+
 </div>
 
 <style>
+    .add-manual-card {
+    border: 2px dashed #888;
+    cursor: pointer;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+}
     /* Стили для сетки модераторов */
     .staff-grid {
         display: grid;
@@ -1866,7 +2172,7 @@
                 return date.toISOString().slice(0, 7);
             })();
 
-        let report = `💰 **Расчет зарплаты для ${role} ${nickname}** 💰\n\n`;
+        let report = `💰 Расчет зарплаты для ${role} ${nickname} 💰\n\n`;
 
         // Базовые начисления
         const online_payment = online_hours <= 40 ? online_hours * 7 : 40 * 10 + (online_hours - 40) * 12;
@@ -1924,12 +2230,120 @@
         // Показываем кнопку сохранения
         document.getElementById('confirm-salary').style.display = 'inline-block';
     }
-</script>
+    async function fetchOnlineHours() {
+    const nickname = document.getElementById('nickname').value;
+    const selectedMonth = document.getElementById('salary-month').value;
 
+    const now = new Date();
+    let year = now.getFullYear();
+    let month = now.getMonth() + 1;
+
+    if (selectedMonth === 'previous') {
+        month = month - 1;
+        if (month === 0) {
+            month = 12;
+            year--;
+        }
+    }
+
+    const start_date = `${year}-${month.toString().padStart(2, '0')}-01`;
+    const end_date = new Date(year, month, 0).toISOString().slice(0, 10);  // последний день месяца
+
+    const response = await fetch(`/get_playtime?nickname=${nickname}&start_date=${start_date}&end_date=${end_date}`);
+    const data = await response.json();
+
+    if (!data.error && data.time) {
+        // Преобразуем "10ч 45м" в часы
+        const match = data.time.match(/(\d+)ч/);
+        const hours = match ? parseInt(match[1]) : 0;
+        document.getElementById('online_hours').value = hours;
+    } else {
+        document.getElementById('online_hours').value = 0;
+    }
+}
+
+</script>
+<script>
+async function sendSalaryReportToTelegram() {
+    const projectName = "{{ project_name }}";
+    const serverName = "{{ server_name }}";
+    const monthSelect = document.getElementById('salary-month');
+    const selectedMonth = monthSelect.value;
+
+    const date = new Date();
+    let month, year;
+
+    if (selectedMonth === 'current') {
+        month = (date.getMonth() + 1).toString().padStart(2, '0');
+        year = date.getFullYear();
+    } else {
+        month = (date.getMonth() === 0 ? 12 : date.getMonth()).toString().padStart(2, '0');
+        year = date.getMonth() === 0 ? date.getFullYear() - 1 : date.getFullYear();
+    }
+
+    const monthStr = `${year}-${month}`;
+
+    try {
+        const response = await fetch("/send_full_salary_report", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                project: projectName,
+                server: serverName,
+                month: monthStr
+            })
+        });
+
+        const result = await response.json();
+        if (result.success) {
+            showNotification("Отчет отправлен в Telegram!");
+        } else {
+            showNotification("Ошибка при отправке отчета: " + (result.error || "неизвестно"));
+        }
+    } catch (err) {
+        showNotification("Ошибка: " + err.message);
+    }
+}
+async function fetchOnlineHours() {
+    const nickname = document.getElementById("nickname").value;
+    const monthSelect = document.getElementById("salary-month");
+    const selectedMonth = monthSelect.value;
+
+    const now = new Date();
+    let start, end;
+
+    if (selectedMonth === "current") {
+        start = new Date(now.getFullYear(), now.getMonth(), 1);
+        end = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+    } else {
+        start = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+        end = new Date(now.getFullYear(), now.getMonth(), 0);
+    }
+
+    const start_date = start.toISOString().split("T")[0];
+    const end_date = end.toISOString().split("T")[0];
+
+    try {
+        const res = await fetch(`/check_online?nickname=${nickname}&start_date=${start_date}&end_date=${end_date}`);
+        const text = await res.text();
+
+        const match = text.match(/(\d+)ч/);
+        const hours = match ? parseInt(match[1]) : 0;
+
+        document.getElementById("online_hours").value = hours;
+    } catch (e) {
+        console.error("Ошибка загрузки онлайна:", e);
+        document.getElementById("online_hours").value = 0;
+    }
+}
+
+</script>
 <!-- Модальное окно для расчета зарплаты -->
+
 <div id="salary-modal" class="modal">
-    <div class="modal-content salary-modal-content">
-        <button class="modal-close" onclick="closeSalaryModal()">☰</button>
+    <button class="modal-close" onclick="closeSalaryModal()">☰</button>
+    <div class="modal-content salary-modal-content" style="overflow-y: auto;">
+
         <div class="salary-header">
             <img id="modal-staff-skin" class="modal-staff-skin" src="" alt="Скин">
             <div class="modal-staff-info">
@@ -1937,7 +2351,8 @@
                 <p id="modal-staff-role"></p>
             </div>
             <div class="month-selector">
-                <select id="salary-month" class="month-select">
+                <select id="salary-month" class="month-select" onchange="updateOnlineHours(document.getElementById('nickname').value)">
+
                     <option value="current">Текущий месяц</option>
                     <option value="previous" selected>Прошлый месяц</option>
                 </select>
@@ -1985,8 +2400,10 @@
                 <button onclick="calculateStaffSalary()" class="calculate-btn">Рассчитать</button>
                 <button id="confirm-salary" onclick="confirmSalary()" class="action-btn confirm-btn" style="display: none;">✅ Сохранить</button>
                 <button id="send-telegram" onclick="sendToTelegram()" class="action-btn send-btn" style="display: none;">📤 Отправить в Telegram</button>
+
             </div>
         </div>
+
         <div id="salary-result" class="salary-result"></div>
     </div>
 </div>

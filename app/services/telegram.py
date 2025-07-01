@@ -1,6 +1,19 @@
 import aiohttp
 from ..config import TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID
 
+
+async def send_custom_message(message: str) -> bool:
+    url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
+    data = {
+        "chat_id": TELEGRAM_CHAT_ID,
+        "text": message,
+        "parse_mode": "Markdown"
+    }
+
+    async with aiohttp.ClientSession() as session:
+        async with session.post(url, json=data) as response:
+            return response.status == 200
+
 async def send_salary_report(salary_data: dict) -> bool:
     """Отправка отчета о зарплате в Telegram"""
     # Форматируем месяц
