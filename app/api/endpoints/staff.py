@@ -36,83 +36,87 @@ def get_salaries(payload: dict):
     return get_all_salaries(project, server, month)
 @router.post("/send_full_salary_report")
 async def send_full_salary_report(payload: dict):
-    project = payload.get("project")
-    server = payload.get("server")
-    month = payload.get("month")
+    try:
+        project = payload.get("project")
+        server = payload.get("server")
+        month = payload.get("month")
 
-    salaries = get_all_salaries(project, server, month)
-    if not salaries:
-        return {"error": "Нет зарплат для отправки"}
+        salaries = get_all_salaries(project, server, month)
+        if not salaries:
+            return {"error": "Нет зарплат для отправки"}
 
-    # Разделяем
-    psj_staff = [s for s in salaries if s.get("role") == "ПСЖ"]
-    active_staff = [s for s in salaries if s.get("role") != "ПСЖ"]
+        # Разделение по статусу
+        psj_staff = [s for s in salaries if s.get("role") == "ПСЖ"]
+        active_staff = [s for s in salaries if s.get("role") != "ПСЖ"]
 
-    # Приоритет по ролям
-    role_priority = {
-        "Гл.модератор": 1,
-        "Ст.модератор": 2,
-        "Модератор": 3,
-        "Хелпер": 4,
-        "Стажер": 5
-    }
+        role_priority = {
+            "Гл.модератор": 1,
+            "Ст.модератор": 2,
+            "Модератор": 3,
+            "Хелпер": 4,
+            "Стажер": 5
+        }
 
-    def sort_key(staff):
-        return role_priority.get(staff.get("role"), 999), staff.get("nickname", "")
+        def sort_key(staff):
+            return role_priority.get(staff.get("role"), 999), staff.get("nickname", "")
 
-    active_staff.sort(key=sort_key)
+        active_staff.sort(key=sort_key)
 
-    # Сообщение
-    header = f"\nСервер {server}\nМесяц {month}\n\n"
+        header = f"\nПроект {project}\nСервер {server}\nМесяц {month}\n\n"
 
-    active_lines = [
-        f"{s['role']} {s['nickname']} — {int(s['total_salary'])} рубинов"
-        for s in active_staff
-    ]
+        active_lines = [
+            f"{s['role']} {s['nickname']} — {int(s['total_salary'])} рубинов"
+            for s in active_staff
+        ]
 
-    psj_lines = [
-        f"{s['nickname']} — {int(s['total_salary'])} рубинов"
-        for s in psj_staff
-    ]
+        psj_lines = [
+            f"{s['nickname']} — {int(s['total_salary'])} рубинов"
+            for s in psj_staff
+        ]
 
-    # Топ по вопросам
-    top_questions = sorted(
-        [s for s in active_staff if s.get("questions_top") in [1, 2, 3]],
-        key=lambda x: x["questions_top"]
-    )
+        # Топ вопрос-ответ
+        top_questions = sorted(
+            [s for s in active_staff if s.get("questions_top") in [1, 2, 3]],
+            key=lambda x: x["questions_top"]
+        )
 
-    question_bonus_lines = [
-        f"{s['nickname']} — +{15 if s['questions_top']==1 else 10 if s['questions_top']==2 else 5}% к зарплате"
-        for s in top_questions
-    ]
+        question_bonus_lines = [
+            f"{s['nickname']} — +{15 if s['questions_top']==1 else 10 if s['questions_top']==2 else 5}% к зарплате ({s['questions_top']} место)"
+            for s in top_questions
+        ]
 
-    # Топ по онлайну
-    top_online = sorted(
-        [s for s in active_staff if s.get("online_top") in [1, 2, 3]],
-        key=lambda x: x["online_top"]
-    )
+        # Топ онлайн
+        top_online = sorted(
+            [s for s in active_staff if s.get("online_top") in [1, 2, 3]],
+            key=lambda x: x["online_top"]
+        )
 
-    online_bonus_lines = [
-        f"{s['nickname']} — +{15 if s['online_top']==1 else 10 if s['online_top']==2 else 5}% к зарплате"
-        for s in top_online
-    ]
+        online_bonus_lines = [
+            f"{s['nickname']} — +{15 if s['online_top']==1 else 10 if s['online_top']==2 else 5}% к зарплате ({s['online_top']} место)"
+            for s in top_online
+        ]
 
-    # Итоговое сообщение
-    full_message = header + "\n".join(active_lines)
+        full_message = header + "\n".join(active_lines)
 
-    if question_bonus_lines:
-        full_message += "\n\nТОП ВОПРОС-ОТВЕТ:\n\n" + "\n".join(question_bonus_lines)
+        if question_bonus_lines:
+            full_message += "\n\nТОП ВОПРОС-ОТВЕТ:\n\n" + "\n".join(question_bonus_lines)
 
-    if online_bonus_lines:
-        full_message += "\n\nТОП ОНЛАЙН:\n\n" + "\n".join(online_bonus_lines)
+        if online_bonus_lines:
+            full_message += "\n\nТОП ОНЛАЙН:\n\n" + "\n".join(online_bonus_lines)
 
-    if psj_lines:
-        full_message += "\n\nПСЖ:\n" + "\n".join(psj_lines)
+        if psj_lines:
+            full_message += "\n\nПСЖ:\n" + "\n".join(psj_lines)
 
-    # Отправка
-    from app.services.telegram import send_custom_message
-    success = await send_custom_message(full_message)
-    return {"success": success}
+        from app.services.telegram import send_custom_message
+        success = await send_custom_message(full_message)
+
+        if not success:
+            return {"error": "Ошибка при отправке в Telegram"}
+
+        return {"success": True}
+    except Exception as e:
+        return {"error": f"Произошла ошибка: {str(e)}"}
+
 
 class SalaryData(BaseModel):
     nickname: str

@@ -1,18 +1,23 @@
 import aiohttp
 from ..config import TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID
+import httpx
 
 
-async def send_custom_message(message: str) -> bool:
-    url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
-    data = {
-        "chat_id": TELEGRAM_CHAT_ID,
-        "text": message,
-        "parse_mode": "Markdown"
-    }
-
-    async with aiohttp.ClientSession() as session:
-        async with session.post(url, json=data) as response:
-            return response.status == 200
+async def send_custom_message(text: str) -> bool:
+    try:
+        url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
+        payload = {
+            "chat_id": TELEGRAM_CHAT_ID,
+            "text": text
+        }
+        async with httpx.AsyncClient() as client:
+            response = await client.post(url, json=payload)
+            if response.status_code != 200:
+                print("Ошибка Telegram:", response.text)
+            return response.status_code == 200
+    except Exception as e:
+        print("Исключение Telegram:", e)
+        return False
 
 async def send_salary_report(salary_data: dict) -> bool:
     """Отправка отчета о зарплате в Telegram"""
