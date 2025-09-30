@@ -2,8 +2,6 @@
 const projectName = document.querySelector('meta[name="project-name"]')?.getAttribute('content') || "GribLand";
 const serverName = getServerName();
 
-console.log("Project:", projectName, "Server:", serverName);
-
 // === УТИЛИТЫ ===
 function getServerName() {
     const serverBanner = document.querySelector('.server-banner .sb-value');
@@ -75,13 +73,11 @@ async function showSalaryCalculator() {
     `;
 
     try {
-        console.log("Запрос на /get_staff...");
         const res = await fetch("/get_staff");
         
         if (!res.ok) throw new Error("Ошибка на сервере");
 
         const data = await res.json();
-        console.log("Данные от /get_staff:", data);
 
         staffList.innerHTML = "";
 
@@ -130,8 +126,6 @@ async function updateOnlineHours(nickname) {
         const startDate = `${year}-${month}-01`;
         const endDate = new Date(year, month, 0).toISOString().split('T')[0];
 
-        console.log(`🔍 Запрос онлайна для ${nickname} за ${startDate} - ${endDate}`);
-
         const response = await fetch(`/check_online?nickname=${encodeURIComponent(nickname)}&start_date=${startDate}&end_date=${endDate}`);
 
         if (!response.ok) throw new Error(`Ошибка сервера: ${response.status}`);
@@ -143,7 +137,6 @@ async function updateOnlineHours(nickname) {
             const hoursMatch = data.time.match(/(\d+)ч/);
             const hours = hoursMatch ? parseInt(hoursMatch[1]) : 0;
             onlineHoursInput.value = hours;
-            console.log(`✅ Установлено значение: ${hours} часов`);
         } else {
             onlineHoursInput.value = 0;
         }
@@ -158,13 +151,10 @@ async function loadSavedTableData(nickname) {
         const selectedMonth = monthSelect.value;
         const { monthStr } = getCurrentMonth(selectedMonth);
 
-        console.log(`🔍 Загрузка данных для ${nickname} за ${monthStr}`);
-
         const response = await fetch(`/get_table_data?project=${encodeURIComponent(projectName)}&server=${encodeURIComponent(serverName)}&month=${encodeURIComponent(monthStr)}`);
 
         if (response.ok) {
             const allData = await response.json();
-            console.log('📊 Все полученные данные:', allData);
 
             const userData = allData.find(item => item.nickname === nickname);
 
@@ -176,17 +166,13 @@ async function loadSavedTableData(nickname) {
                 document.getElementById('interviews').value = userData.interviews || '';
                 document.getElementById('online_top').value = userData.online_top || '';
                 document.getElementById('questions_top').value = userData.questions_top || '';
-                console.log('✅ Данные из таблицы загружены в форму:', userData);
             } else {
-                console.log('ℹ️ Нет сохраненных данных для этого модератора');
                 clearTableFields();
             }
         } else {
-            console.log('ℹ️ Нет сохраненных данных в таблице');
             clearTableFields();
         }
     } catch (error) {
-        console.error('❌ Ошибка при загрузке сохраненных данных:', error);
         clearTableFields();
     }
 }
@@ -302,8 +288,6 @@ async function confirmSalary() {
             status: status
         };
 
-        console.log("Saving salary data:", salaryData);
-
         const response = await fetch('/save_salary', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
@@ -359,7 +343,6 @@ async function sendToTelegram() {
             showNotification('Ошибка при отправке: ' + (result.error || 'Неизвестная ошибка'));
         }
     } catch (error) {
-        console.error('Ошибка при отправке:', error);
         showNotification('Ошибка при отправке: ' + error.message);
     }
 }
