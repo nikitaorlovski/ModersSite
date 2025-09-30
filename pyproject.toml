@@ -1,0 +1,31 @@
+[project]
+name = "moderssite"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "Nikita Orlovsky",email = "orlovski15555@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi (>=0.118.0,<0.119.0)",
+    "uvicorn (>=0.37.0,<0.38.0)",
+    "alembic[tz] (>=1.16.5,<2.0.0)",
+    "aiohttp (>=3.12.15,<4.0.0)",
+    "bcrypt (>=5.0.0,<6.0.0)",
+    "jinja2 (>=3.1.6,<4.0.0)",
+    "pydantic (>=2.11.9,<3.0.0)",
+    "pydantic-settings (>=2.11.0,<3.0.0)",
+    "sqlalchemy (>=2.0.43,<3.0.0)",
+    "itsdangerous (>=2.2.0,<3.0.0)",
+    "passlib (>=1.7.4,<2.0.0)",
+    "argon2-cffi (>=25.1.0,<26.0.0)",
+    "python-multipart (>=0.0.20,<0.0.21)",
+    "httpx (>=0.28.1,<0.29.0)",
+    "aiosqlite (>=0.21.0,<0.22.0)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"

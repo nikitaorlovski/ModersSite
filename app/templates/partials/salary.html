@@ -1,0 +1,309 @@
+
+<!-- Зарплатный калькулятор -->
+<!-- Зарплатный калькулятор -->
+<div id="salary-section">
+    <div id="header-container">
+        <h2 class="salary-title">💰 Расчет зарплат</h2>
+        <button onclick="openSalaryReport()" class="yellow-btn">📄 Отчёт по зарплатам</button>
+    </div>
+
+    <div id="staff-list" class="staff-grid"></div>
+
+    <!-- Карточка для ручного добавления -->
+    <div class="staff-card add-manual-card" onclick="openManualSalaryForm()">
+        <div class="staff-name">➕</div>
+        <div class="staff-role">Добавить модератора</div>
+    </div>
+</div>
+
+<!-- Модальное окно для отчета -->
+<!-- Модальное окно для расчёта зарплаты -->
+<div id="salary-modal" class="modal">
+    <!-- Фиксированный крестик (остается на месте при прокрутке) -->
+    <button class="modal-close" onclick="closeSalaryModal()">✕</button>
+
+    <div class="salary-modal-content">
+        <!-- Альтернативный вариант - прикрепленный крестик -->
+        <!-- <button class="modal-close-sticky" onclick="closeSalaryModal()">✕</button> -->
+
+        <div class="salary-header">
+            <img id="modal-staff-skin" class="modal-staff-skin" src="" alt="Скин">
+            <div class="modal-staff-info">
+                <h3 id="modal-staff-name"></h3>
+                <p id="modal-staff-role"></p>
+            </div>
+            <div class="month-selector">
+                <select id="salary-month" class="month-select" onchange="updateOnlineHours(document.getElementById('nickname').value)">
+                    <option value="current">Текущий месяц</option>
+                    <option value="previous" selected>Прошлый месяц</option>
+                </select>
+            </div>
+        </div>
+
+<!-- Форма расчета -->
+<div class="salary-form">
+    <input type="hidden" id="nickname">
+
+    <!-- Колонка 1 -->
+    <div class="form-group">
+        <label>Время онлайна (часы)</label>
+        <input type="number" id="online_hours" class="input-field" min="0">
+    </div>
+    <div class="form-group">
+        <label>Жалобы</label>
+        <input type="number" id="complaints" class="input-field" min="0">
+    </div>
+    <div class="form-group">
+        <label>Прикрепленные модераторы</label>
+        <input type="number" id="attached_moderators" class="input-field" min="0">
+    </div>
+
+    <!-- Колонка 2 -->
+    <div class="form-group">
+        <label>Топ по онлайну (1-3 или пусто)</label>
+        <input type="number" id="online_top" class="input-field" min="1" max="3">
+    </div>
+    <div class="form-group" id="severe_complaints_group">
+        <label>Жалобы на модераторов</label>
+        <input type="number" id="severe_complaints" class="input-field" min="0">
+    </div>
+    <div class="form-group">
+        <label>Рецензия от ГМА</label>
+        <input type="number" id="gma_review" class="input-field" min="0">
+    </div>
+
+    <!-- Колонка 3 -->
+    <div class="form-group">
+        <label>Вопрос-ответ</label>
+        <input type="number" id="questions" class="input-field" min="0">
+    </div>
+    <div class="form-group" id="interviews_group">
+        <label>Собеседования</label>
+        <input type="number" id="interviews" class="input-field" min="0">
+    </div>
+    <div class="form-group">
+        <label>Топ по вопросам (1-3 или пусто)</label>
+        <input type="number" id="questions_top" class="input-field" min="1" max="3">
+    </div>
+
+    <!-- Кнопки действий -->
+    <div class="form-actions">
+        <button onclick="calculateStaffSalary()" class="calculate-btn">Рассчитать</button>
+        <button id="confirm-salary" onclick="confirmSalary()" class="action-btn confirm-btn" style="display:none;">✅ Сохранить</button>
+        <button id="send-telegram" onclick="sendToTelegram()" class="action-btn send-btn" style="display:none;">📤 Отправить в Telegram</button>
+    </div>
+</div>
+
+        <div id="salary-result" class="salary-result"></div>
+    </div>
+</div>
+
+<!-- Модальное окно для отчета -->
+<!-- Модальное окно для отчета -->
+<div id="report-modal" class="modal-container">
+    <button onclick="closeModal('report-modal')" class="action-btn-cancel-btn">✕</button>
+
+    <div class="modal-content">
+
+        <h2>📊 Отчёт по зарплатам</h2>
+
+        <div class="report-controls">
+            <label for="report-month">📅 Месяц:</label>
+            <select id="report-month" onchange="refreshSalaryReport()" class="report-select">
+                <option value="current">Текущий</option>
+                <option value="previous">Прошлый</option>
+            </select>
+
+        </div>
+
+        <div class="styled-table-container">
+            <table id="salary-report-table" class="styled-table">
+                <thead>
+                    <tr>
+                        <th>Ник</th>
+                        <th>Роль</th>
+                        <th>Онлайн</th>
+                        <th>Вопросы</th>
+                        <th>Жалобы</th>
+                        <th>Жб. Ст.</th>
+                        <th>Прикр.</th>
+                        <th>Собесы</th>
+                        <th>Топ Онлайн</th>
+                        <th>Топ Вопросы</th>
+                        <th>Рецензия</th>
+                        <th>Зарплата</th>
+                        <th>Действия</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <div style="text-align: center; margin-top: 25px; padding-top: 20px; border-top: 1px solid rgba(255, 215, 0, 0.2);">
+            <button onclick="sendSalaryReportToTelegram()" class="action-btn send-btn">
+                📤 Отправить в Telegram
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openSalaryModal(nickname, role) {
+    const modal = document.getElementById('salary-modal');
+    const staffName = document.getElementById('modal-staff-name');
+    const staffRole = document.getElementById('modal-staff-role');
+    const staffSkin = document.getElementById('modal-staff-skin');
+    const nicknameInput = document.getElementById('nickname');
+
+    staffName.textContent = nickname;
+    staffRole.textContent = role;
+
+    // Получаем project_name для скина
+    const projectName = document.querySelector('meta[name="project-name"]').getAttribute('content');
+    staffSkin.src = `https://meta-api.metalabs.work/api/v3/users/skins/${projectName}/head/${nickname}`;
+
+    nicknameInput.value = nickname;
+
+    // Скрываем/показываем поля в зависимости от роли
+    const severeComplaintsGroup = document.getElementById('severe_complaints_group');
+    const interviewsGroup = document.getElementById('interviews_group');
+
+    if (role === 'Куратор' || role === 'Гл.модератор' || role === 'Ст.модератор') {
+        severeComplaintsGroup.style.display = 'block';
+        interviewsGroup.style.display = 'block';
+    } else {
+        severeComplaintsGroup.style.display = 'none';
+        interviewsGroup.style.display = 'none';
+        document.getElementById('severe_complaints').value = '';
+        document.getElementById('interviews').value = '';
+    }
+
+    clearSalaryForm();
+    updateOnlineHours(nickname);
+    modal.classList.add('show'); // Правильное открытие модалки
+}
+
+function closeSalaryModal() {
+    document.getElementById('salary-modal').classList.remove('show');
+}
+
+function openSalaryReport() {
+    document.getElementById("report-modal").classList.add("show");
+    refreshSalaryReport();
+}
+
+function closeModal(id) {
+    document.getElementById(id).classList.remove("show");
+}
+
+    async function refreshSalaryReport() {
+    const project = projectName;
+    const server = serverName;
+    const monthSelect = document.getElementById('report-month');
+    const selectedMonth = monthSelect.value;
+
+    const date = new Date();
+    let month, year;
+    if (selectedMonth === 'current') {
+        month = (date.getMonth() + 1).toString().padStart(2, '0');
+        year = date.getFullYear();
+    } else {
+        month = (date.getMonth() === 0 ? 12 : date.getMonth()).toString().padStart(2, '0');
+        year = date.getMonth() === 0 ? date.getFullYear() - 1 : date.getFullYear();
+    }
+
+    const monthStr = `${year}-${month}`;
+
+    const response = await fetch("/get_salaries", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ project, server, month: monthStr })
+    });
+
+        const salaries = await response.json();
+        const tbody = document.querySelector("#salary-report-table tbody");
+        tbody.innerHTML = "";
+
+        if (!salaries || !salaries.length) {
+            tbody.innerHTML = `<tr><td colspan="13">Нет данных за выбранный месяц</td></tr>`;
+            return;
+        }
+
+        salaries.forEach(s => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td contenteditable="true">${s.nickname}</td>
+                <td contenteditable="true">${s.role}</td>
+                <td contenteditable="true">${s.online_hours}</td>
+                <td contenteditable="true">${s.questions}</td>
+                <td contenteditable="true">${s.complaints}</td>
+                <td contenteditable="true">${s.severe_complaints}</td>
+                <td contenteditable="true">${s.attached_moderators}</td>
+                <td contenteditable="true">${s.interviews}</td>
+                <td contenteditable="true">${s.online_top ?? ""}</td>
+                <td contenteditable="true">${s.questions_top ?? ""}</td>
+                <td contenteditable="true">${s.gma_review ?? ""}</td>
+                <td contenteditable="true">${s.total_salary}</td>
+                <td>
+                    <button onclick="deleteSalary('${s.nickname}', '${s.project}', '${s.server}', '${s.month}', this)">🗑</button>
+                </td>
+            `;
+            tbody.appendChild(row);
+        });
+    }
+
+    async function deleteSalary(nickname, project, server, month, buttonElement) {
+        const confirmed = confirm(`Удалить запись ${nickname}?`);
+        if (!confirmed) return;
+
+        const res = await fetch("/delete_salary", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ nickname, project, server, month })
+        });
+
+        const result = await res.json();
+        if (result.success) {
+            showNotification("Запись удалена");
+
+            // Удаляем строку из DOM
+            const row = buttonElement.closest("tr");
+            if (row) row.remove();
+        } else {
+            showNotification("Ошибка при удалении");
+        }
+    }
+
+
+
+    function openManualSalaryForm() {
+        const modal = document.getElementById('salary-modal');
+        const staffName = document.getElementById('modal-staff-name');
+        const staffRole = document.getElementById('modal-staff-role');
+        const staffSkin = document.getElementById('modal-staff-skin');
+        const nicknameInput = document.getElementById('nickname');
+
+        // Сброс и подготовка
+        clearSalaryForm();
+
+        // Запрашиваем ник
+        const nickname = prompt("Введите никнейм модератора (ПСЖ):");
+        if (!nickname) return;
+
+        staffName.textContent = nickname;
+        staffRole.textContent = "ПСЖ";
+        staffSkin.src = `https://meta-api.metalabs.work/api/v3/users/skins/{{ project_name }}/head/${nickname}`;
+        nicknameInput.value = nickname;
+
+        // Показываем все поля
+        document.getElementById('severe_complaints_group').style.display = 'block';
+        document.getElementById('interviews_group').style.display = 'block';
+
+        modal.classList.add('show');
+    }
+    // Открытие модального окна
+
+function closeModal(id) {
+    document.getElementById(id).classList.remove("show"); // Убираем класс, чтобы скрыть окно
+}
+</script>

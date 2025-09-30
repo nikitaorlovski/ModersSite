@@ -1,0 +1,1489 @@
+/* Контейнер для заголовка и кнопки */
+#header-container {
+    text-align: center;
+    margin-top: 20px;
+    margin-bottom: 30px;
+}
+
+#header-container .yellow-btn {
+    background: linear-gradient(45deg, #FFCC00, #FFD700);
+    color: #1c1c2e;
+    padding: 10px 20px; /* Меньше вертикальный padding */
+    font-size: 1rem; /* Чуть меньше шрифт */
+    font-weight: 400;
+    border-radius: 8px;
+    margin-left: -65px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+    box-shadow: 0 4px 12px rgba(255, 204, 0, 0.3);
+    transform: scale(0.9); /* Уменьшает всю кнопку на 10% */
+}
+
+#header-container .yellow-btn:hover {
+    background: linear-gradient(45deg, #FFD700, #FFCC00);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(255, 204, 0, 0.4);
+}
+
+/* Основной контейнер зарплат */
+#salary-section {
+    margin-top: 20px;
+    padding: 0 20px;
+    margin-left: -70px; /* Смещаем всю секцию влево */
+}
+
+
+/* Сетка модераторов - 3 в ряд */
+.staff-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    margin-left: -30px; /* Дополнительное смещение влево */
+}
+
+/* Карточка модератора */
+.staff-card {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 215, 0, 0.1);
+    backdrop-filter: blur(10px);
+    position: relative;
+    overflow: hidden;
+}
+
+.staff-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.1), transparent);
+    transition: left 0.5s;
+}
+
+.staff-card:hover::before {
+    left: 100%;
+}
+
+.staff-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(255, 215, 0, 0.2);
+    border-color: rgba(255, 215, 0, 0.3);
+}
+
+/* Скин модератора */
+.staff-skin {
+    width: 60px;
+    height: 60px;
+    border-radius: 10px;
+    border: 2px solid rgba(255, 215, 0, 0.3);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+}
+
+
+.staff-card:hover .staff-skin {
+    border-color: rgba(255, 215, 0, 0.6);
+    transform: scale(1.05);
+}
+
+/* Информация о модераторе */
+.staff-info {
+    flex-grow: 1;
+    min-width: 0;
+}
+
+.staff-name {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #FFD700;
+    margin-bottom: 5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+}
+
+.staff-role {
+    font-size: 0.85rem;
+    color: #ffffff;
+    opacity: 0.9;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: 600; /* Делаем текст жирнее */
+    text-shadow: 0 0 5px currentColor; /* Добавляем свечение */
+}
+
+/* Обновленные цвета ролей */
+.staff-role[data-role="Куратор"] {
+    color: #FF4444 !important; /* Ярко-красный */
+    text-shadow: 0 0 8px #FF4444 !important;
+}
+
+.staff-role[data-role="Гл.модератор"] {
+    color: #9400D3 !important; /* Фиолетовый */
+    text-shadow: 0 0 8px #9400D3 !important;
+}
+
+.staff-role[data-role="Ст.модератор"] {
+    color: #00FFFF !important; /* Яркий бирюзовый */
+    text-shadow: 0 0 8px #00FFFF !important;
+}
+
+.staff-role[data-role="Модератор"] {
+    color: #00FF00 !important; /* Ярко-зеленый */
+    text-shadow: 0 0 8px #00FF00 !important;
+}
+
+.staff-role[data-role="Хелпер"] {
+    color: #1E90FF !important; /* Ярко-синий */
+    text-shadow: 0 0 8px #1E90FF !important;
+}
+
+.staff-role[data-role="Стажёр"] {
+    color: #FFA500 !important; /* Оранжевый */
+    text-shadow: 0 0 8px #FFA500 !important;
+}
+
+/* Карточка для ручного добавления */
+.add-manual-card {
+    border: 2px dashed rgba(255, 215, 0, 0.4);
+    background: rgba(255, 215, 0, 0.05);
+    justify-content: center;
+    text-align: center;
+    flex-direction: column;
+    gap: 0px;
+    width: 91%; /* Занимает всю ширину колонки */
+    box-sizing: border-box; /* Учитываем padding в ширине */
+    min-height: 120px; /* Фиксированная высота как у других карточек */
+}
+
+.add-manual-card:hover {
+    border-color: rgba(255, 215, 0, 0.7);
+    background: rgba(255, 215, 0, 0.1);
+}
+
+.add-manual-card .staff-name {
+    font-size: 1.5rem;
+    color: rgba(255, 215, 0, 0.8);
+}
+
+.add-manual-card .staff-role {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* Контейнер для заголовка и кнопки - тоже смещаем */
+#header-container {
+    text-align: center;
+    margin-top: 20px;
+    margin-bottom: 30px;
+    margin-left: -50px; /* Смещаем влево вместе с контентом */
+}
+
+#header-container .yellow-btn {
+    background: linear-gradient(45deg, #FFCC00, #FFD700);
+    color: #1c1c2e;
+    padding: 12px 25px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+    box-shadow: 0 4px 15px rgba(255, 204, 0, 0.3);
+}
+
+#header-container .yellow-btn:hover {
+    background: linear-gradient(45deg, #FFD700, #FFCC00);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(255, 204, 0, 0.4);
+}
+
+/* Адаптивность */
+@media (max-width: 1024px) {
+    .staff-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+        padding: 15px;
+        margin-left: -20px;
+    }
+
+    #salary-section {
+        margin-left: -30px;
+    }
+}
+
+@media (max-width: 768px) {
+    .staff-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+        padding: 10px;
+        margin-left: 0; /* На мобильных убираем смещение */
+    }
+
+    #salary-section {
+        margin-left: 0;
+        padding: 0 10px;
+    }
+
+    #header-container {
+        margin-left: 0;
+    }
+
+    .salary-title {
+        margin-left: 0;
+    }
+
+    .staff-card {
+        padding: 15px;
+    }
+
+    .staff-skin {
+        width: 50px;
+        height: 50px;
+    }
+
+    .staff-name {
+        font-size: 1rem;
+    }
+
+    .staff-role {
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .staff-grid {
+        gap: 10px;
+        padding: 5px;
+    }
+
+    .staff-card {
+        padding: 12px;
+        gap: 12px;
+    }
+}
+
+/* Заголовок секции */
+/* Заголовок секции */
+.salary-title {
+    text-align: center;
+    color: #FFD700;
+    font-size: 1.5rem;
+    margin-bottom: 30px;
+    text-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+    position: relative;
+    margin-left: -70px; /* Компенсируем увеличенное смещение */
+}
+
+.salary-title::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, #FFD700, transparent);
+    border-radius: 2px;
+}
+
+
+/* Стили для модальных окон */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
+    overflow: auto;
+}
+
+.modal.show {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Контент модального окна зарплаты */
+.salary-modal-content {
+    background: linear-gradient(135deg, #1c1c2e, #2d2d44);
+    border-radius: 15px;
+    padding: 30px;
+    width: 90%;
+    max-width: 800px;
+    max-height: 90vh;
+    overflow-y: auto;
+    color: white;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 215, 0, 0.2);
+    position: relative;
+}
+
+/* Кнопка закрытия */
+.modal-close {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 20px;
+    z-index: 10;
+}
+
+.modal-close:hover {
+    background: rgba(255, 215, 0, 0.3);
+    transform: rotate(90deg);
+}
+
+/* Заголовок модалки зарплаты */
+.salary-header {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid rgba(255, 215, 0, 0.2);
+}
+
+.modal-staff-skin {
+    width: 80px;
+    height: 80px;
+    border-radius: 12px;
+    border: 2px solid rgba(255, 215, 0, 0.3);
+    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.2);
+}
+
+.modal-staff-info h3 {
+    color: #FFD700;
+    font-size: 1.5rem;
+    margin: 0;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+}
+
+.modal-staff-info p {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 1.1rem;
+    margin: 5px 0 0 0;
+}
+
+/* Селектор месяца */
+.month-selector {
+    margin-left: auto;
+}
+
+.month-select {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 215, 0, 0.3);
+    border-radius: 8px;
+    color: #FFD700;
+    padding: 8px 15px;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.month-select:hover {
+    border-color: rgba(255, 215, 0, 0.5);
+    background: rgba(0, 0, 0, 0.4);
+}
+
+/* Форма зарплаты */
+.salary-form {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 15px;
+    transition: all 0.3s ease;
+}
+
+.form-group:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 215, 0, 0.2);
+}
+
+.form-group label {
+    display: block;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.form-group input {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    color: #FFD700;
+    padding: 10px;
+    font-size: 1rem;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.form-group input:focus {
+    border-color: rgba(255, 215, 0, 0.5);
+    outline: none;
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
+}
+
+/* Кнопки действий */
+.form-actions {
+    grid-column: 1 / -1;
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.calculate-btn, .action-btn {
+    padding: 12px 25px;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+    min-width: 180px;
+}
+
+.calculate-btn {
+    background: linear-gradient(45deg, #FFD700, #FFA500);
+    color: #000;
+}
+
+.confirm-btn {
+    background: linear-gradient(45deg, #4CAF50, #45a049);
+    color: white;
+}
+
+.send-btn {
+    background: linear-gradient(45deg, #0088cc, #0099ff);
+    color: white;
+}
+
+.calculate-btn:hover, .action-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
+}
+
+/* Результат расчета */
+.salary-result {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    padding: 20px;
+    margin-top: 20px;
+    font-size: 1rem;
+    line-height: 1.6;
+    border: 1px solid rgba(255, 215, 0, 0.2);
+    white-space: pre-line;
+    display: none;
+}
+
+/* Модальное окно отчета */
+.modal-container {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(5px);
+    overflow: auto;
+}
+
+.modal-container.show {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background: linear-gradient(135deg, #1c1c2e, #2d2d44);
+    border-radius: 15px;
+    padding: 25px;
+    width: 95%;
+    max-width: 1400px;
+    max-height: 90vh;
+    overflow-y: auto;
+    color: white;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 215, 0, 0.2);
+    position: relative;
+}
+
+/* Уведомления */
+.notification {
+    position: fixed;
+    top: -100px;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.9);
+    color: #fff;
+    padding: 15px 25px;
+    border-radius: 10px;
+    z-index: 9999;
+    font-size: 1rem;
+    min-width: 250px;
+    text-align: center;
+    border: 1px solid rgba(255, 215, 0, 0.3);
+    backdrop-filter: blur(10px);
+    transform: translateY(-20px);
+    opacity: 0;
+    transition: all 0.5s ease;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+}
+
+.notification.show {
+    top: 20px;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Адаптивность модалок */
+@media (max-width: 768px) {
+    .salary-modal-content {
+        width: 95%;
+        padding: 20px;
+        margin: 20px;
+    }
+
+    .salary-form {
+        grid-template-columns: 1fr;
+    }
+
+    .salary-header {
+        flex-direction: column;
+        text-align: center;
+        gap: 15px;
+    }
+
+    .month-selector {
+        margin-left: 0;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .calculate-btn, .action-btn {
+        min-width: auto;
+        width: 100%;
+    }
+}
+
+
+/* Форма зарплаты - делаем более компактной */
+.salary-form {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px; /* Уменьшили расстояние между полями */
+    margin-bottom: 20px;
+}
+
+/* Группы полей - делаем очень компактными */
+.form-group {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 10px 12px; /* Минимальные отступы */
+    transition: all 0.3s ease;
+    min-height: 75px; /* Еще меньше высота */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.form-group:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 215, 0, 0.2);
+}
+
+.form-group label {
+    display: block;
+    font-size: 0.8rem; /* Очень маленький шрифт */
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 6px;
+    font-weight: 500;
+    line-height: 1.2;
+}
+
+.form-group input {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+    color: #FFD700;
+    padding: 6px 8px; /* Очень компактные отступы */
+    font-size: 0.85rem; /* Маленький шрифт */
+    text-align: center;
+    transition: all 0.3s ease;
+    height: 32px; /* Фиксированная высота */
+    box-sizing: border-box;
+}
+
+.form-group input:focus {
+    border-color: rgba(255, 215, 0, 0.5);
+    outline: none;
+    box-shadow: 0 0 8px rgba(255, 215, 0, 0.2);
+}
+
+/* Заголовок модалки - делаем еще компактнее */
+.salary-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 15px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(255, 215, 0, 0.2);
+}
+
+.modal-staff-skin {
+    width: 60px; /* Еще меньше скин */
+    height: 60px;
+    border-radius: 8px;
+    border: 2px solid rgba(255, 215, 0, 0.3);
+    box-shadow: 0 3px 10px rgba(255, 215, 0, 0.2);
+}
+
+.modal-staff-info h3 {
+    color: #FFD700;
+    font-size: 1.2rem;
+    margin: 0;
+    text-shadow: 0 0 8px rgba(255, 215, 0, 0.3);
+}
+
+.modal-staff-info p {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.9rem;
+    margin: 3px 0 0 0;
+}
+
+/* Селектор месяца - компактнее */
+.month-selector {
+    margin-left: auto;
+}
+
+.month-select {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 215, 0, 0.3);
+    border-radius: 6px;
+    color: #FFD700;
+    padding: 6px 12px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    height: 34px;
+}
+
+/* Кнопки действий - компактнее */
+.form-actions {
+    grid-column: 1 / -1;
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 15px;
+}
+
+.calculate-btn, .action-btn {
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+    min-width: 140px;
+    height: 36px;
+}
+
+/* Контент модалки - делаем уже для компактности */
+.salary-modal-content {
+    background: linear-gradient(135deg, #1c1c2e, #2d2d44);
+    border-radius: 12px;
+    padding: 20px;
+    width: 90%;
+    max-width: 850px; /* Уже чем было */
+    max-height: 85vh;
+    overflow-y: auto;
+    color: white;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 215, 0, 0.2);
+    position: relative;
+}
+
+/* Улучшенные стили для кнопки закрытия */
+.modal-close {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 20px;
+    z-index: 1001;
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 215, 0, 0.3);
+}
+
+.modal-close:hover {
+    background: rgba(255, 215, 0, 0.3);
+    transform: rotate(90deg) scale(1.0);
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+}
+
+/* Альтернативный вариант - кнопка в заголовке */
+.modal-close-alt {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: linear-gradient(45deg, #ff4444, #cc0000);
+    border: none;
+    color: white;
+    width: 35px;
+    height: 35px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 18px;
+    z-index: 1001;
+    box-shadow: 0 2px 8px rgba(255, 0, 0, 0.3);
+}
+
+.modal-close-alt:hover {
+    background: linear-gradient(45deg, #ff5555, #dd0000);
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(255, 0, 0, 0.4);
+}
+
+/* Вариант с иконкой вместо текста */
+.modal-close-icon {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: rgba(255, 255, 255, 0.15);
+    border: 2px solid rgba(255, 215, 0, 0.4);
+    color: #FFD700;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 18px;
+    z-index: 1001;
+    font-weight: bold;
+}
+
+.modal-close-icon:hover {
+    background: rgba(255, 215, 0, 0.2);
+    border-color: rgba(255, 215, 0, 0.8);
+    transform: rotate(90deg);
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+}
+
+/* Убедимся, что контент не перекрывается */
+.salary-modal-content {
+    background: linear-gradient(135deg, #1c1c2e, #2d2d44);
+    border-radius: 15px;
+    padding: 30px;
+    width: 90%;
+    max-width: 800px;
+    max-height: 90vh;
+    overflow-y: auto;
+    color: white;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 215, 0, 0.2);
+    position: relative;
+    /* Добавляем отступ сверху для безопасности */
+    margin-top: 20px;
+}
+
+/* Заголовок модалки - добавляем правый отступ для кнопки */
+.salary-header {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid rgba(255, 215, 0, 0.2);
+    padding-right: 50px; /* Место для кнопки закрытия */
+}
+
+/* Адаптивность для мобильных */
+@media (max-width: 768px) {
+    .modal-close {
+        top: 10px;
+        right: 10px;
+        width: 35px;
+        height: 35px;
+        font-size: 18px;
+    }
+
+    .salary-modal-content {
+        padding: 20px;
+        margin: 10px;
+    }
+
+    .salary-header {
+        padding-right: 40px;
+    }
+}
+
+@media (max-width: 480px) {
+    .modal-close {
+        top: 8px;
+        right: 8px;
+        width: 30px;
+        height: 30px;
+        font-size: 16px;
+    }
+
+    .salary-header {
+        padding-right: 35px;
+        gap: 15px;
+    }
+}
+
+/* Стили для модальных окон */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
+    overflow: auto;
+}
+
+.modal.show {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Контент модального окна зарплаты */
+.salary-modal-content {
+    background: linear-gradient(135deg, #1c1c2e, #2d2d44);
+    border-radius: 15px;
+    padding: 30px;
+    width: 90%;
+    max-width: 800px;
+    max-height: 90vh;
+    overflow-y: auto;
+    color: white;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 215, 0, 0.2);
+    position: relative;
+
+    /* Стилизация скроллбара */
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 215, 0, 0.6) rgba(255, 255, 255, 0.1);
+}
+
+/* Стилизация скроллбара для Webkit браузеров (Chrome, Safari) */
+.salary-modal-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.salary-modal-content::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    margin: 5px 0;
+}
+
+.salary-modal-content::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, rgba(255, 215, 0, 0.6), rgba(255, 215, 0, 0.8));
+    border-radius: 4px;
+    border: 1px solid rgba(255, 215, 0, 0.3);
+}
+
+.salary-modal-content::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, rgba(255, 215, 0, 0.8), rgba(255, 215, 0, 1));
+}
+
+.salary-modal-content::-webkit-scrollbar-corner {
+    background: transparent;
+}
+
+/* Фиксированный крестик закрытия */
+.modal-close {
+    position: fixed; /* Меняем на fixed */
+    top: 20px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.15);
+    border: 2px solid rgba(255, 215, 0, 0.4);
+    color: #FFD700;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 20px;
+    font-weight: bold;
+    z-index: 1002; /* Выше чем модальное окно */
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.modal-close:hover {
+    background: rgba(255, 215, 0, 0.3);
+    border-color: rgba(255, 215, 0, 0.8);
+    transform: rotate(90deg) scale(1.1);
+    box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
+}
+
+/* Альтернативный вариант крестика - прикрепленный к контенту */
+.modal-close-sticky {
+    position: sticky;
+    top: 15px;
+    float: right;
+    background: rgba(255, 255, 255, 0.15);
+    border: 2px solid rgba(255, 215, 0, 0.4);
+    color: #FFD700;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 18px;
+    font-weight: bold;
+    z-index: 10;
+    margin-left: auto;
+    margin-bottom: 10px;
+}
+
+.modal-close-sticky:hover {
+    background: rgba(255, 215, 0, 0.3);
+    border-color: rgba(255, 215, 0, 0.8);
+    transform: rotate(90deg) scale(1.1);
+}
+
+/* Заголовок модалки с учетом фиксированного крестика */
+.salary-header {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid rgba(255, 215, 0, 0.2);
+    position: relative;
+}
+
+/* Адаптивность для мобильных */
+@media (max-width: 768px) {
+    .salary-modal-content {
+        width: 95%;
+        padding: 25px 20px;
+        margin: 15px;
+        max-height: 85vh;
+    }
+
+    .modal-close {
+        top: 15px;
+        right: 15px;
+        width: 40px;
+        height: 40px;
+        font-size: 18px;
+    }
+
+    .modal-close-sticky {
+        width: 35px;
+        height: 35px;
+        font-size: 16px;
+        top: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .salary-modal-content {
+        padding: 20px 15px;
+        margin: 10px;
+    }
+
+    .modal-close {
+        top: 10px;
+        right: 10px;
+        width: 35px;
+        height: 35px;
+        font-size: 16px;
+    }
+
+    /* Уменьшаем скроллбар на мобильных */
+    .salary-modal-content::-webkit-scrollbar {
+        width: 6px;
+    }
+}
+
+/* Плавная прокрутка */
+.salary-modal-content {
+    scroll-behavior: smooth;
+}
+
+/* Затемнение фона при скролле (опционально) */
+.modal::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(28, 28, 46, 0.9), rgba(45, 45, 68, 0.9));
+    z-index: -1;
+}
+
+/* Стили для модального окна отчета */
+.modal-container {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(5px);
+    overflow: auto;
+}
+
+.modal-container.show {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background: linear-gradient(135deg, #1c1c2e, #2d2d44);
+    border-radius: 15px;
+    padding: 25px;
+    width: 95%;
+    max-width: 1400px;
+    max-height: 90vh;
+    overflow-y: auto;
+    color: white;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 215, 0, 0.2);
+    position: relative;
+
+    /* Стилизация скроллбара */
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 215, 0, 0.6) rgba(255, 255, 255, 0.1);
+}
+
+.modal-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.modal-content::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    margin: 5px 0;
+}
+
+.modal-content::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, rgba(255, 215, 0, 0.6), rgba(255, 215, 0, 0.8));
+    border-radius: 4px;
+    border: 1px solid rgba(255, 215, 0, 0.3);
+}
+
+/* Заголовок отчета */
+.modal-content h2 {
+    text-align: center;
+    color: #FFD700;
+    font-size: 1.8rem;
+    margin-bottom: 25px;
+    text-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+    position: relative;
+    padding-bottom: 10px;
+}
+
+.modal-content h2::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 150px;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, #FFD700, transparent);
+    border-radius: 2px;
+}
+
+/* Контролы отчета */
+.report-controls {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 25px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    border: 1px solid rgba(255, 215, 0, 0.2);
+}
+
+.report-controls label {
+    color: #FFD700;
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.report-select {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 215, 0, 0.3);
+    border-radius: 8px;
+    color: #FFD700;
+    padding: 8px 15px;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.report-select:hover {
+    border-color: rgba(255, 215, 0, 0.5);
+    background: rgba(0, 0, 0, 0.4);
+}
+
+/* Стили для таблицы */
+.styled-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.styled-table thead {
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 215, 0, 0.1));
+    border-bottom: 2px solid rgba(255, 215, 0, 0.3);
+}
+
+.styled-table th {
+    padding: 15px 12px;
+    text-align: center;
+    color: #FFD700;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-right: 1px solid rgba(255, 215, 0, 0.1);
+    position: relative;
+    min-width: 80px;
+}
+
+.styled-table th:last-child {
+    border-right: none;
+}
+
+.styled-table th::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 10%;
+    width: 80%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.5), transparent);
+}
+
+.styled-table tbody tr {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+}
+
+.styled-table tbody tr:hover {
+    background: rgba(255, 215, 0, 0.1);
+    transform: translateY(-1px);
+    box-shadow: 0 3px 10px rgba(255, 215, 0, 0.2);
+}
+
+.styled-table tbody tr:last-child {
+    border-bottom: none;
+}
+
+.styled-table td {
+    padding: 12px 10px;
+    text-align: center;
+    font-size: 0.85rem;
+    border-right: 1px solid rgba(255, 255, 255, 0.05);
+    vertical-align: middle;
+    position: relative;
+}
+
+.styled-table td:last-child {
+    border-right: none;
+}
+
+/* Стили для редактируемых ячеек */
+.styled-table td[contenteditable="true"] {
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 5px;
+    transition: all 0.3s ease;
+    min-height: 20px;
+    outline: none;
+}
+
+.styled-table td[contenteditable="true"]:focus {
+    background: rgba(255, 215, 0, 0.1);
+    box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.3);
+}
+
+/* Особые стили для колонок */
+.styled-table td:first-child { /* Ник */
+    font-weight: 600;
+    color: #FFD700;
+    text-align: left;
+    padding-left: 15px;
+}
+
+.styled-table td:nth-child(2) { /* Роль */
+    font-weight: 500;
+    text-align: left;
+}
+
+.styled-table td:nth-child(12) { /* Зарплата */
+    font-weight: 700;
+    color: #4CAF50;
+    font-size: 0.9rem;
+}
+
+.styled-table td:nth-child(13) { /* Действия */
+    min-width: 80px;
+}
+
+/* Кнопка удаления */
+.styled-table button {
+    background: linear-gradient(135deg, #ff4444, #cc0000);
+    border: none;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.8rem;
+    min-width: 60px;
+}
+
+.styled-table button:hover {
+    background: linear-gradient(135deg, #ff5555, #dd0000);
+    transform: scale(1.05);
+    box-shadow: 0 2px 8px rgba(255, 0, 0, 0.3);
+}
+
+/* Кнопка отправки в Telegram */
+.action-btn.send-btn {
+    background: linear-gradient(135deg, #0088cc, #0099ff);
+    color: white;
+    padding: 12px 25px;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+    min-width: 200px;
+    margin-top: 10px;
+}
+
+.action-btn.send-btn:hover {
+    background: linear-gradient(135deg, #0099ff, #0088cc);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 136, 204, 0.4);
+}
+
+/* Состояние пустой таблицы */
+.styled-table tbody tr td[colspan="13"] {
+    text-align: center;
+    padding: 40px;
+    color: rgba(255, 255, 255, 0.6);
+    font-style: italic;
+    background: rgba(255, 255, 255, 0.02);
+}
+
+/* Фиксированный крестик для модалки отчета */
+.action-btn-cancel-btn {
+    position: fixed;
+    top: 20px;
+    right: 50px;
+    background: rgba(255, 255, 255, 0.15);
+    border: 2px solid rgba(255, 215, 0, 0.4);
+    color: #FFD700;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 20px;
+    font-weight: bold;
+    z-index: 1002;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.action-btn-cancel-btn:hover {
+    background: rgba(255, 215, 0, 0.3);
+    border-color: rgba(255, 215, 0, 0.8);
+    transform: rotate(90deg) scale(1.1);
+    box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
+}
+
+/* Адаптивность для таблицы */
+@media (max-width: 1200px) {
+    .modal-content {
+        width: 98%;
+        padding: 20px;
+    }
+
+    .styled-table {
+        font-size: 0.8rem;
+    }
+
+    .styled-table th,
+    .styled-table td {
+        padding: 10px 8px;
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .modal-content {
+        margin: 10px;
+        padding: 15px;
+    }
+
+    .report-controls {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+    }
+
+    .styled-table-container {
+        overflow-x: auto;
+    }
+
+    .styled-table {
+        min-width: 800px; /* Минимальная ширина для горизонтального скролла */
+    }
+
+    .action-btn-cancel-btn {
+        top: 15px;
+        right: 15px;
+        width: 40px;
+        height: 40px;
+        font-size: 18px;
+    }
+}
+
+/* Анимация появления строк */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.styled-table tbody tr {
+    animation: fadeInUp 0.4s ease-out;
+}
+
+.styled-table tbody tr:nth-child(even) {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.styled-table tbody tr:nth-child(even):hover {
+    background: rgba(255, 215, 0, 0.08);
+}
+
+.salary-form {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px; /* Убедитесь что gap одинаковый */
+    margin-bottom: 20px;
+}
+
+/* Убедитесь что все группы полей имеют одинаковую высоту */
+.form-group {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 10px 12px;
+    transition: all 0.3s ease;
+    min-height: 75px; /* Фиксированная высота для всех */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-sizing: border-box; /* Важно для правильного расчета размеров */
+}
+
+/* Если проблема осталась, добавьте выравнивание */
+.form-group {
+    align-items: stretch; /* Растягиваем содержимое */
+}
+
+/* Или принудительное выравнивание для всех элементов */
+.salary-form > * {
+    align-self: start; /* Выравниваем все по верху */
+}

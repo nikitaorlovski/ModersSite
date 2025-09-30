@@ -1,16 +1,14 @@
-from fastapi import FastAPI, Depends, HTTPException, status
+from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.sessions import SessionMiddleware
 import os
+
 from app.core.config import get_settings
-from app.api.endpoints import auth, projects, staff
-from fastapi.security import OAuth2PasswordBearer
-from app.core.security import verify_password
-from typing import Optional
+from app.api.endpoints import auth, projects, staff, table
 
 settings = get_settings()
 
-app = FastAPI()
+app = FastAPI(title="Moderators Site")
 
 # Настройка статических файлов
 static_dir = os.path.join(os.path.dirname(__file__), "static")
@@ -20,26 +18,12 @@ app.mount("/static", StaticFiles(directory=static_dir), name="static")
 # Настройка сессий
 app.add_middleware(SessionMiddleware, secret_key=settings.SECRET_KEY)
 
-# Подключаем роуты
+# Подключаем роутеры
 app.include_router(auth.router)
 app.include_router(projects.router)
 app.include_router(staff.router)
+app.include_router(table.router, prefix="/api", tags=["table"])
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
-
-def verify_token(token: str) -> Optional[dict]:
-    # В текущей реализации с сессиями эта функция не нужна
-    # Она будет полезна при переходе на JWT-токены
-    return None
-
-def get_current_user(token: str = Depends(oauth2_scheme)):
-    user = verify_token(token)
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Не авторизован",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    return user
-
-
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("app.main:app", host="0.0.0.0", port=8000, reload=True)

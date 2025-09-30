@@ -1,0 +1,198 @@
+body {
+    background: url('/static/1.jpg') no-repeat center center;
+    background-size: cover;
+    color: white;
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    text-align: center;
+    overflow: hidden;
+    background-attachment: scroll;
+    background-position: 50% 50%;
+    transition: background-position 0.1s ease-out;
+}
+
+/* Объемная надпись MetaLabs */
+.parallax-title {
+    font-size: 5rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    background: linear-gradient(45deg, #ff7e00, #ffcc00, #ff7e00);
+    -webkit-text-stroke: 2px rgba(0, 0, 0, 0.8);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    text-shadow: 4px 4px 10px rgba(255, 255, 255, 0.3);
+    position: absolute;
+    top: 5%;
+    z-index: 25;
+    transition: transform 0.1s ease-out;
+    user-select: none;
+}
+
+/* Контейнер авторизации */
+.login-container {
+    background-color: rgba(0, 0, 0, 0.6);
+    padding: 35px;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.7);
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 400px;
+}
+
+input {
+    width: calc(100% - 20px);
+    padding: 12px;
+    margin: 10px 0;
+    font-size: 1rem;
+    border: none;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    text-align: center;
+    outline: none;
+    transition: background 0.3s ease;
+}
+
+input:focus {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 16px;
+}
+
+h2 {
+    font-family: 'Lobster', cursive;
+    font-size: 2rem;
+    font-weight: 300;
+    color: #fff;
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    user-select: none;
+}
+
+button {
+    width: 70%;
+    padding: 12px 20px;
+    margin-top: 10px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    background: linear-gradient(45deg, rgba(255, 140, 0, 0.8), rgba(255, 200, 55, 0.8));
+    color: white;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 4px 10px rgba(255, 140, 0, 0.3);
+}
+
+button:hover {
+    background: linear-gradient(45deg, rgba(255, 160, 40, 0.9), rgba(255, 220, 90, 0.9));
+    transform: scale(1.05);
+}
+
+/* Косая надпись */
+.tilted-text {
+    position: absolute;
+    top: 15%;
+    left: 65%;
+    transform: translateX(-50%) rotate(-20deg);
+    font-size: 1.7rem;
+    font-weight: bold;
+    font-family: "Poppins", "Comic Sans MS", sans-serif;
+    color: #c770ff;
+    text-shadow: 3px 3px 10px rgba(186, 85, 211, 0.8);
+    background: rgba(0, 0, 0, 0);
+    padding: 5px 15px;
+    border-radius: 10px;
+    white-space: nowrap;
+    animation: pulse 2s infinite alternate ease-in-out;
+    z-index: 100;
+    -webkit-text-stroke: 2px rgba(0, 0, 0, 0.9);
+    user-select: none;
+}
+
+@keyframes pulse {
+    0% {
+        transform: translateX(-50%) rotate(-20deg) scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: translateX(-50%) rotate(-20deg) scale(1.1);
+        opacity: 0.8;
+    }
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .parallax-title {
+        font-size: 3rem;
+        top: 3%;
+    }
+
+    .tilted-text {
+        font-size: 1.2rem;
+        top: 10%;
+        left: 50%;
+        transform: translateX(-50%) rotate(-10deg);
+        text-align: center;
+        white-space: normal;
+    }
+
+    .login-container {
+        width: 90%;
+        padding: 25px;
+    }
+
+    input {
+        font-size: 0.95rem;
+        padding: 10px;
+    }
+
+    button {
+        width: 100%;
+        font-size: 1rem;
+    }
+
+    h2 {
+        font-size: 1.5rem;
+        text-align: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .parallax-title {
+        font-size: 2.2rem;
+        letter-spacing: 2px;
+    }
+
+    .tilted-text {
+        font-size: 1rem;
+        top: 8%;
+        left: 50%;
+    }
+
+    h2 {
+        font-size: 1.3rem;
+    }
+
+    input {
+        font-size: 0.9rem;
+    }
+
+    button {
+        font-size: 0.95rem;
+        padding: 10px;
+    }
+}
+

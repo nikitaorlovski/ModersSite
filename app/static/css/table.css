@@ -1,0 +1,191 @@
+/* static/css/table.css */
+#table-section {
+    padding: 20px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid rgba(255, 215, 0, 0.3);
+}
+
+.section-header h2 {
+    color: #FFD700;
+    font-size: 1.8rem;
+    margin: 0;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+}
+
+.table-controls {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.table-controls label {
+    color: #FFD700;
+    font-weight: 600;
+}
+
+.month-select, .save-btn, .refresh-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 215, 0, 0.3);
+    border-radius: 8px;
+    color: white;
+    padding: 8px 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.month-select:hover, .save-btn:hover, .refresh-btn:hover {
+    border-color: rgba(255, 215, 0, 0.6);
+    background: rgba(255, 215, 0, 0.1);
+}
+
+.save-btn {
+    background: linear-gradient(135deg, #4CAF50, #45a049);
+}
+
+.refresh-btn {
+    background: linear-gradient(135deg, #2196F3, #1976D2);
+}
+
+.table-container {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    border: 1px solid rgba(255, 215, 0, 0.2);
+    overflow-x: auto;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.data-table th {
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 215, 0, 0.1));
+    color: #FFD700;
+    padding: 15px 12px;
+    text-align: center;
+    font-weight: 600;
+    border-bottom: 2px solid rgba(255, 215, 0, 0.3);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.data-table td {
+    padding: 12px 10px;
+    text-align: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.data-table tr:hover td {
+    background: rgba(255, 215, 0, 0.08);
+}
+
+.data-table input {
+    width: 80px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    color: #FFD700;
+    padding: 8px;
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+.data-table input:focus {
+    border-color: rgba(255, 215, 0, 0.6);
+    outline: none;
+    box-shadow: 0 0 8px rgba(255, 215, 0, 0.3);
+}
+
+.nickname-cell {
+    font-weight: 600;
+    color: #FFD700;
+    text-align: left;
+    padding-left: 15px;
+}
+
+.save-row-btn {
+    background: linear-gradient(135deg, #4CAF50, #45a049);
+    border: none;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: all 0.3s ease;
+}
+
+.save-row-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+}
+
+.table-info {
+    background: rgba(255, 215, 0, 0.1);
+    border: 1px solid rgba(255, 215, 0, 0.3);
+    border-radius: 10px;
+    padding: 20px;
+    margin-top: 20px;
+}
+
+.table-info p {
+    color: #FFD700;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.table-info ul {
+    color: rgba(255, 255, 255, 0.9);
+    margin-left: 20px;
+}
+
+.table-info li {
+    margin-bottom: 5px;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .section-header {
+        flex-direction: column;
+        gap: 15px;
+        align-items: stretch;
+    }
+
+    .table-controls {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .table-container {
+        padding: 10px;
+    }
+
+    .data-table {
+        font-size: 0.8rem;
+    }
+
+    .data-table th,
+    .data-table td {
+        padding: 8px 6px;
+    }
+
+    .data-table input {
+        width: 60px;
+        padding: 6px;
+    }
+}

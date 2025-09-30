@@ -1,0 +1,23 @@
+<!-- Блок игрока -->
+<div id="player-profile" class="player-container section-block">
+    <div class="avatar-wrapper">
+        <img src="{{ user_skin_url }}" alt="Голова игрока" class="player-avatar">
+    </div>
+    <p class="player-name">{{ username }}</p>
+    <p class="playtime">🕒 Онлайн за месяц: {{ monthly_playtime }}</p>
+    <button class="details-btn" onclick="openProfileModal()">Подробнее</button>
+</div>
+
+
+<!-- Модалка с подробной инфой -->
+<div id="profile-modal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeProfileModal()">&times;</span>
+        <h2>{{ username }}</h2>
+        <p><b>Роль:</b> {{ user_role }}</p>
+        <p><b>Онлайн за месяц:</b> {{ monthly_playtime }}</p>
+        <p><b>Дата вступления:</b> {{ join_date }}</p>
+        <p><b>Жалобы обработаны:</b> {{ complaints_count }}</p>
+        <p><b>Вопросы/ответы:</b> {{ questions_count }}</p>
+    </div>
+</div>

@@ -1,13 +1,13 @@
-import aiohttp
-from ..config import TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID
 import httpx
+from app.core.config import get_settings
 
+settings = get_settings()
 
 async def send_custom_message(text: str) -> bool:
     try:
-        url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
+        url = f"https://api.telegram.org/bot{settings.TELEGRAM_BOT_TOKEN}/sendMessage"
         payload = {
-            "chat_id": TELEGRAM_CHAT_ID,
+            "chat_id": settings.TELEGRAM_CHAT_ID,
             "text": text
         }
         async with httpx.AsyncClient() as client:
@@ -18,6 +18,7 @@ async def send_custom_message(text: str) -> bool:
     except Exception as e:
         print("Исключение Telegram:", e)
         return False
+
 
 async def send_salary_report(salary_data: dict) -> bool:
     """Отправка отчета о зарплате в Telegram"""
@@ -32,7 +33,6 @@ async def send_salary_report(salary_data: dict) -> bool:
     else:
         month_text = "За текущий месяц"
 
-    # Форматируем сообщение
     message = f"""💰 *Зарплата модератора*
 👤 {salary_data['role']} *{salary_data['nickname']}*
 📅 {month_text}
@@ -54,13 +54,13 @@ async def send_salary_report(salary_data: dict) -> bool:
 
     message += f"\n\n💎 *Итого: {salary_data['total_salary']} рубинов*"
 
-    url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
+    url = f"https://api.telegram.org/bot{settings.TELEGRAM_BOT_TOKEN}/sendMessage"
     data = {
-        "chat_id": TELEGRAM_CHAT_ID,
+        "chat_id": settings.TELEGRAM_CHAT_ID,
         "text": message,
         "parse_mode": "Markdown"
     }
 
-    async with aiohttp.ClientSession() as session:
-        async with session.post(url, json=data) as response:
-            return response.status == 200 
+    async with httpx.AsyncClient() as client:
+        response = await client.post(url, json=data)
+        return response.status_code == 200

@@ -1,0 +1,160 @@
+/* ===== Состав: сетка ===== */
+#moderators-section .moderators-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 22px;
+  width: min(1280px, 100%);
+  margin: 18px auto 10px auto;   /* 🔥 центрируем по горизонтали */
+  justify-content: center;       /* 🔥 сетка строго по центру */
+}
+
+/* ===== Карточка роли (колонка) ===== */
+#moderators-section .moderators-column{
+  background: rgba(0,0,0,.45);
+  border:1px solid rgba(255,255,255,.06);
+  border-radius:14px;
+  padding:14px 12px;
+  display:flex;
+  flex-direction:column;
+  height:280px;                /* фикс-высота блока */
+  box-shadow:0 6px 16px rgba(0,0,0,.45);
+  transition:transform .2s ease;
+}
+#moderators-section .moderators-column:hover{
+  transform:translateY(-4px);
+}
+
+/* ===== Заголовок роли ===== */
+#moderators-section .moderators-column h4{
+  margin:2px 0 10px;
+  font:700 1.05rem/1.2 'Inter', system-ui, sans-serif;
+  text-transform:uppercase;
+  letter-spacing:.8px;
+  text-align:center;
+  position:relative;
+  padding-bottom:5px;
+}
+#moderators-section .moderators-column h4::after{
+  content:"";
+  display:block;
+  width:64%;
+  height:3px;
+  margin:7px auto 0;
+  border-radius:2px;
+  opacity:.9;
+}
+
+/* ===== Список игроков со скроллом ===== */
+#moderators-section .moderator-list{
+  flex:1 1 auto;
+  overflow-y:auto;             /* скролл внутри колонки */
+  padding-right:6px;
+}
+#moderators-section .moderator-list::-webkit-scrollbar{ width:6px; }
+#moderators-section .moderator-list::-webkit-scrollbar-thumb{
+  background: rgba(255,255,255,.24);
+  border-radius:6px;
+}
+#moderators-section .moderator-list::-webkit-scrollbar-thumb:hover{
+  background: rgba(255,255,255,.38);
+}
+
+/* ===== Чип игрока ===== */
+#moderators-section .moderator-card{
+  background:linear-gradient(145deg,#1f1f2f,#161625);
+  border:1px solid rgba(255,255,255,.06);
+  border-radius:8px;
+  color:#f2f2f7;
+  font-weight:700;
+  font-size:.95rem;
+  padding:10px 12px;
+  margin:8px 10px;
+  text-align:center;
+  transition:transform .15s ease, background .15s ease, border-color .15s ease;
+}
+#moderators-section .moderator-card:hover{
+  background:linear-gradient(145deg,#26263a,#1a1a2a);
+  transform:translateY(-2px);
+  border-color:rgba(255,255,255,.18);
+}
+
+/* ===== Цвета ролей + линия под заголовком ===== */
+#moderators-section .curator{ color:#ff4dff; text-shadow:0 0 10px rgba(255,77,255,.45); }
+#moderators-section .curator::after{ background:#ff4dff; }
+
+#moderators-section .grandmoderator{ color:#a64dff; text-shadow:0 0 10px rgba(166,77,255,.45); }
+#moderators-section .grandmoderator::after{ background:#a64dff; }
+
+#moderators-section .stmoderator{ color:#ffd700; text-shadow:0 0 10px rgba(255,215,0,.45); }
+#moderators-section .stmoderator::after{ background:#ffd700; }
+
+#moderators-section .moder{ color:#00ff66; text-shadow:0 0 10px rgba(0,255,102,.45); }
+#moderators-section .moder::after{ background:#00ff66; }
+
+#moderators-section .helper{ color:#00aaff; text-shadow:0 0 10px rgba(0,170,255,.45); }
+#moderators-section .helper::after{ background:#00aaff; }
+
+#moderators-section .intern{ color:#ff6633; text-shadow:0 0 10px rgba(255,102,51,.45); }
+#moderators-section .intern::after{ background:#ff6633; }
+
+/* Немного выровняем блок статистики под шапкой */
+#staff-stats.server-header {
+  margin: 10px auto;             /* 🔥 убрали смещение влево */
+}
+
+@media (max-width: 900px){
+  #moderators-section .moderators-column{ height:260px; }
+}
+/* Обёртка статистики */
+.server-header {
+    text-align: center;
+    margin: 20px auto;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.55);
+    border-radius: 12px;
+    max-width: 900px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.5);
+}
+
+/* Заголовок */
+.server-header h2 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin-bottom: 15px;
+    color: #FFD700;
+    text-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
+}
+
+/* Инфо-блоки */
+.server-info {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 18px;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #f0f0f0;
+}
+
+.server-info .info-item {
+    background: rgba(255, 255, 255, 0.06);
+    padding: 8px 14px;
+    border-radius: 6px;
+    min-width: 120px;
+    box-shadow: inset 0 0 6px rgba(0,0,0,0.4);
+}
+
+#moderators-section .moderators-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 22px;
+  width: min(1280px, 100%);
+  margin: 18px 0 10px -120px;   /* убрали auto, оставили по левому краю */
+  justify-content: start;   /* прижали сетку влево */
+}
+
+#staff-stats.server-header {
+  margin: 10px 20px;       /* убираем auto, будет слева */
+  text-align: center;     /* выравнивание текста влево */
+  max-width: 900px;     /* можешь оставить или убрать */
+}

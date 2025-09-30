@@ -1,0 +1,260 @@
+/* Боковое меню */
+.sidebar {
+    height: 100vh;
+    width: 250px;
+    position: fixed;
+    top: 0;
+    left: -250px; /* спрятано */
+    background: rgba(26, 26, 46, 0.95);
+    backdrop-filter: blur(10px);
+    transition: left 0.3s ease-in-out;
+    padding-top: 60px;
+    box-shadow: 4px 0 15px rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar a {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 16.5px;
+    color: #f0f0f0;
+    letter-spacing: 0.2px;
+    text-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
+    text-decoration: none;
+    padding: 15px 25px;
+    margin: 5px 0;
+    display: flex;
+    align-items: center;
+    transition: all 0.3s;
+}
+
+.sidebar a:hover {
+    color: #FFD700;
+    background: rgba(255, 255, 255, 0.1);
+    padding-left: 30px;
+    font-weight: 700;
+}
+
+.menu-btn {
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    font-size: 24px;
+    cursor: pointer;
+    color: white;
+    background: rgba(26, 26, 46, 0.9);
+    border: none;
+    padding: 10px 15px;
+    border-radius: 8px;
+    transition: all 0.3s;
+    z-index: 999;
+}
+
+.menu-btn:hover {
+    background: rgba(26, 26, 46, 1);
+    transform: scale(1.05);
+}
+
+/* Общий фон */
+/* Глобальный фон */
+body {
+    background-color: #141421;
+    background-image:
+        radial-gradient(circle at 20% 30%, rgba(255,255,255,0.02) 0%, transparent 25%),
+        radial-gradient(circle at 80% 70%, rgba(255,255,255,0.015) 0%, transparent 30%);
+    background-repeat: no-repeat;
+    background-size: cover;
+    color: #f0f0f0;
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+}
+
+/* Контейнеры (например профиль, карточки, таблицы) */
+.section-block {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 20px;
+    margin: 20px 0;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.section-block:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.6);
+}
+
+/* Заголовки выделяем ярче */
+h1, h2, h3, h4 {
+    color: #fff;
+    text-shadow: 0 0 5px rgba(255, 215, 0, 0.3);
+}
+
+/* Акценты */
+.highlight {
+    color: #FFD700;
+}
+
+
+main {
+    margin-left: 260px;
+    padding: 20px;
+    min-height: 100vh; /* чтобы занимало весь экран */
+    box-sizing: border-box;
+}
+
+/* Шапка проекта и сервера */
+.server-banner {
+    display: flex;               /* flex вместо inline-block */
+    justify-content: center;     /* центрируем по горизонтали */
+    align-items: center;         /* центрируем по вертикали */
+    padding: 6px 14px;
+    margin: 0 auto 20px auto;    /* центрируем блок */
+    background: rgba(0, 0, 0, 0.45);
+    border: 1px solid rgba(255, 215, 0, 0.2);
+    border-radius: 8px;
+    font-family: 'Inter', sans-serif;
+    white-space: nowrap;
+    box-shadow: 0 0 6px rgba(255, 215, 0, 0.15);
+
+    /* 🔥 убери эти 2 строки */
+    /* position: relative;
+    left: 40%;*/
+    transform: translateX(-50%);
+}
+
+
+/* GribLand */
+.server-banner .sb-title {
+    font-weight: 700;
+    font-size: clamp(18px, 1.6vw, 24px);
+    background: linear-gradient(180deg, #FFD88B 0%, #E6B800 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 1px 4px rgba(230, 184, 0, 0.25);
+}
+
+/* OneBlock */
+.server-banner .sb-value {
+    font-weight: 600;
+    font-size: clamp(16px, 1.4vw, 20px);
+    background: linear-gradient(180deg, #E0E0E0 0%, #C8D6E5 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 1px 4px rgba(200, 210, 230, 0.25);
+}
+
+
+/* Заголовок проекта — золотой градиент */
+.sb-title {
+    font-weight: 700;
+    font-size: clamp(18px, 2vw, 28px);
+    background: linear-gradient(180deg, #FFD65A 0%, #FFAE00 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 1px 6px rgba(255, 174, 0, 0.3);
+    margin-right: 6px;
+}
+
+/* Подпись «Сервер: …» */
+.sb-meta{
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.sb-label{
+  color: #b6b7c6;
+  font-weight: 600;
+  font-size: clamp(14px, 1.4vw, 18px);
+  letter-spacing: .2px;
+}
+
+.sb-value {
+    font-weight: 600;
+    font-size: clamp(15px, 1.5vw, 22px);
+    color: #e5e5ff;
+    text-shadow: 0 1px 6px rgba(120, 140, 255, 0.25);
+}
+
+/* чтобы карточка профиля не «налипала» на шапку */
+#profile-section .section-block,
+.player-container.section-block{
+  margin-top: 6px;
+}
+
+/* акцент на строке «Онлайн за месяц» — чуть жирнее */
+.playtime{
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+
+.sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.back-icon {
+    font-size: 20px;
+    color: #FFD700;
+    text-decoration: none;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.back-icon:hover {
+    color: #FFA500;
+}
+
+.back-btn {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    font-size: 22px;
+    cursor: pointer;
+    color: #FFD700;
+    background: none;
+    border: none;
+    transition: transform 0.2s ease, color 0.3s ease;
+}
+
+.back-btn:hover {
+    transform: scale(1.2);
+    color: #FFA500;
+}
+
+.close-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    font-size: 22px;
+    cursor: pointer;
+    color: #fff;
+    background: none;
+    border: none;
+    transition: transform 0.2s ease;
+}
+
+.close-btn:hover {
+    transform: scale(1.2);
+}
+
+/* Сдвиг при открытом/закрытом сайдбаре */
+main {
+  margin-left: 0; /* пусть сайдбар перекрывает */
+  transition: margin-left 0.3s ease;
+  display: flex;
+  min-height: 100vh;         /* высота на весь экран */
+  flex-direction: column;
+}
+
