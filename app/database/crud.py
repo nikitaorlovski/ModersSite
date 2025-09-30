@@ -91,14 +91,40 @@ async def create_or_update_table_data(db: AsyncSession, data: StaffTableDataCrea
     return existing
 
 
+# crud.py - исправляем функцию get_table_data
+# crud.py - временное решение
 async def get_table_data(db: AsyncSession, project: str, server: str, month: str):
-    query = select(StaffTableData).where(
-        StaffTableData.project == project,
-        StaffTableData.server == server,
-        StaffTableData.month == month
-    )
-    result = await db.execute(query)
-    return result.scalars().all()
+    try:
+        query = select(StaffTableData).where(
+            StaffTableData.project == project,
+            StaffTableData.server == server,
+            StaffTableData.month == month
+        )
+        result = await db.execute(query)
+        staff_data = result.scalars().all()
+
+        # Если нет данных - верни пустой массив
+        if not staff_data:
+            return []
+
+        # Преобразуем в словари
+        return [
+            {
+                "nickname": item.nickname,
+                "online_hours": item.online_hours,
+                "questions": item.questions,
+                "complaints": item.complaints,
+                "severe_complaints": item.severe_complaints,
+                "attached_moderators": item.attached_moderators,
+                "interviews": item.interviews,
+                "online_top": item.online_top,
+                "questions_top": item.questions_top
+            }
+            for item in staff_data
+        ]
+    except Exception as e:
+        print(f"Error in get_table_data: {e}")
+        return []  # В случае ошибки верни пустой массив
 
 # crud.py - добавить эту функцию
 async def get_table_data_by_nickname(db: AsyncSession, nickname: str, project: str, server: str, month: str):

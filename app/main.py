@@ -5,6 +5,7 @@ import os
 
 from app.core.config import get_settings
 from app.api.endpoints import auth, projects, staff, table
+from app.database.base import Base, engine
 
 settings = get_settings()
 
@@ -22,7 +23,14 @@ app.add_middleware(SessionMiddleware, secret_key=settings.SECRET_KEY)
 app.include_router(auth.router)
 app.include_router(projects.router)
 app.include_router(staff.router)
-app.include_router(table.router, prefix="/api", tags=["table"])
+app.include_router(table.router, tags=["table"])
+
+@app.on_event("startup")
+async def startup_event():
+    # Создаем таблицы если их нет
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+    print("✅ Таблицы базы данных проверены/созданы")
 
 if __name__ == "__main__":
     import uvicorn

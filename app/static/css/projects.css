@@ -9,7 +9,7 @@ body {
     position: relative;
 }
 
-/* Простой фон с градиентом и минимальным объемом */
+/* Простой фон с градиентом */
 .background {
     background: url('/static/bg-spaces.png') center center / cover no-repeat;
     position: absolute;
@@ -42,9 +42,13 @@ body {
     background: linear-gradient(to top, rgba(5, 10, 35, 0.2) 0%, rgba(5, 10, 35, 0) 100%);
 }
 
+/* Убираем лишние элементы */
 .dot-grid,
 .stars,
-.star {
+.star,
+.shooting-star,
+body::before,
+body::after {
     display: none;
 }
 
@@ -126,7 +130,7 @@ body {
 .project-logo {
     width: 120px;
     height: 120px;
-    border-radius: 50%; 
+    border-radius: 50%;
     object-fit: cover;
     border: 3px solid rgba(79, 172, 254, 0.6);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
@@ -159,6 +163,7 @@ body {
     flex-wrap: wrap;
 }
 
+/* Базовые стили серверов */
 .server {
     background: rgba(0, 71, 171, 0.4);
     backdrop-filter: blur(5px);
@@ -184,7 +189,25 @@ body {
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
 }
 
-/* Особые эффекты для серверов */
+/* Общие стили для всех серверов при hover */
+.server:hover::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.2;
+    z-index: -1;
+}
+
+.server:hover::after {
+    position: absolute;
+    right: 10px;
+    font-size: 1.2rem;
+}
+
+/* Специфичные стили для каждого сервера */
 .oneblock-server {
     background: linear-gradient(45deg, rgba(41, 128, 185, 0.5), rgba(52, 152, 219, 0.5));
 }
@@ -192,21 +215,10 @@ body {
     background: linear-gradient(45deg, rgba(52, 152, 219, 0.7), rgba(41, 128, 185, 0.7));
 }
 .oneblock-server:hover::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
     background: url('/static/oneblock-bg.jpg') center/cover no-repeat;
-    opacity: 0.2;
-    z-index: -1;
 }
 .oneblock-server:hover::after {
     content: '🏝️';
-    position: absolute;
-    right: 10px;
-    font-size: 1.2rem;
     animation: float 1s ease-in-out infinite alternate;
 }
 
@@ -217,21 +229,10 @@ body {
     background: linear-gradient(45deg, rgba(142, 68, 173, 0.7), rgba(155, 89, 182, 0.7));
 }
 .technomagic-server:hover::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
     background: url('/static/technomagic-bg.jpg') center/cover no-repeat;
-    opacity: 0.2;
-    z-index: -1;
 }
 .technomagic-server:hover::after {
     content: '✨';
-    position: absolute;
-    right: 10px;
-    font-size: 1.2rem;
     animation: sparkle 1.5s ease-in-out infinite;
 }
 
@@ -242,45 +243,27 @@ body {
     background: linear-gradient(45deg, rgba(39, 174, 96, 0.7), rgba(46, 204, 113, 0.7));
 }
 .hitech-server:hover::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
     background: url('/static/hitech-bg.jpg') center/cover no-repeat;
-    opacity: 0.2;
-    z-index: -1;
 }
 .hitech-server:hover::after {
     content: '⚙️';
-    position: absolute;
-    right: 10px;
-    font-size: 1.2rem;
     animation: rotate 3s linear infinite;
 }
 
 /* Анимации */
 @keyframes sparkle {
-    0% { transform: scale(0.8); opacity: 0.5; }
+    0%, 100% { transform: scale(0.8); opacity: 0.5; }
     50% { transform: scale(1.2); opacity: 1; }
-    100% { transform: scale(0.8); opacity: 0.5; }
 }
+
 @keyframes rotate {
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
 }
+
 @keyframes float {
     from { transform: translateY(0); }
     to { transform: translateY(-5px); }
-}
-
-/* --- Адаптивность (на мобилках сервера в столбик) --- */
-@media (max-width: 800px) {
-    .server-list {
-        flex-direction: column;
-        align-items: center;
-    }
 }
 
 /* Кнопка выхода */
@@ -295,20 +278,51 @@ body {
     cursor: pointer;
     text-decoration: none;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
 }
+
 .logout-btn-fixed:hover {
     background: #ff4757;
     transform: translateY(-3px);
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
 }
 
-/* Чистим лишнее */
-body::before, body::after {
-    content: none;
+/* --- Адаптивность --- */
+@media (max-width: 800px) {
+    .server-list {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .server {
+        min-width: 200px;
+        width: 100%;
+    }
+
+    .server-container {
+        padding: 20px;
+        margin: 0 15px;
+    }
+
+    .project-info h1 {
+        font-size: 1.7rem;
+    }
 }
-.shooting-star {
-    display: none;
-}
-@keyframes shooting-animation {
-    display: none;
+
+@media (max-width: 600px) {
+    body {
+        flex-direction: column;
+        height: auto;
+        overflow: auto;
+    }
+
+    .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+    }
+
+    .main-content {
+        padding: 20px 15px;
+    }
 }
