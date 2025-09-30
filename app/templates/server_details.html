@@ -8,30 +8,37 @@
     <link rel="stylesheet" href="{{ url_for('static', path='/css/profile.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', path='/css/moderators.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', path='/css/salary.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', path='/css/table.css') }}">
     <meta name="project-name" content="{{ project_name }}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 
 <body>
-    <!-- Кнопка меню -->
-    <button class="menu-btn" onclick="openMenu()">☰</button>
 
-    <!-- Боковое меню - ДОЛЖЕН БЫТЬ ЗДЕСЬ, ВНЕ MAIN -->
-    <div class="sidebar" id="sidebar">
-        <div class="sidebar-header">
-            <button class="back-btn" onclick="window.location.href='/projects'">←</button>
-            <button class="close-btn" onclick="closeMenu()">×</button>
-        </div>
+<button class="menu-btn" onclick="openMenu()">☰</button>
+<!-- Оверлей -->
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="closeMenu()"></div>
 
-        <a href="#" onclick="showSection('profile-section')">👤 Профиль</a>
-        <a href="#" onclick="showSection('moderators-section')">📋 Список состава</a>
-        <a href="#" onclick="showSection('activity-section')">📊 Активность</a>
-        <a href="#" onclick="showSection('online-section')">🔍 Splaytime</a>
-        <a href="#" onclick="showSection('salary-section')">💰 Расчет зарплат</a>
-        <a href="#" onclick="showSection('table-section')">📊 Таблицы</a>
+<!-- Сайдбар -->
+<div class="sidebar" id="sidebar">
+    <!-- Заголовок приклеен к верху -->
+    <div class="sidebar-header">
+        <button class="back-btn" onclick="window.location.href='/projects'">←</button>
+        <button class="close-btn" onclick="closeMenu()">×</button>
+    </div>
+
+    <!-- Основные ссылки меню -->
+    <div class="sidebar-nav">
+        <a href="#" onclick="showSection('profile-section'); closeMenu();">👤 Профиль</a>
+        <a href="#" onclick="showSection('moderators-section'); closeMenu();">📋 Список состава</a>
+        <a href="#" onclick="showSection('activity-section'); closeMenu();">📊 Активность</a>
+        <a href="#" onclick="showSection('online-section'); closeMenu();">🔍 Splaytime</a>
+        <a href="#" onclick="showSection('salary-section'); closeMenu();">💰 Расчет зарплат</a>
+        <a href="/table_page/{{ project_name }}/{{ server_name }}" target="_blank">📊 Таблицы</a>
+
+        <!-- Кнопка Выйти после Таблиц -->
         <a href="/logout">🚪 Выйти</a>
     </div>
+</div>
 
     <main style="margin-left:260px; padding:20px;">
         <!-- Баннер проекта и сервера -->
@@ -60,15 +67,10 @@
         <div id="salary-section" style="display: none;">
             {% include "partials/salary.html" %}
         </div>
-
-        <div id="table-section" style="display: none;">
-            {% include "partials/table.html" %}
-        </div>
     </main>
 
     <script src="/static/js/server.js"></script>
     <script src="/static/js/staff.js"></script>
     <script src="/static/js/salary.js"></script>
-    <script src="/static/js/table.js"></script>
 </body>
 </html>

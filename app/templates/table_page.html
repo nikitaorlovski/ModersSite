@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Таблица данных модераторов - {{ project_name }} | {{ server_name }}</title>
+    <style>
+        /* МИНИМАЛЬНЫЕ СТИЛИ ТОЛЬКО ДЛЯ ТАБЛИЦЫ */
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #1c1c2e;
+            color: white;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #FFD700;
+        }
+
+        .header h1 {
+            color: #FFD700;
+            margin: 0 0 10px 0;
+        }
+
+        .server-info {
+            color: #ccc;
+            font-size: 1.1rem;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            align-items: center;
+        }
+
+        .controls select, .controls button {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 6px;
+            color: white;
+            padding: 8px 15px;
+            cursor: pointer;
+        }
+
+        .controls button {
+            background: #4CAF50;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th {
+            background: rgba(255, 215, 0, 0.2);
+            color: #FFD700;
+            padding: 15px 12px;
+            text-align: center;
+            font-weight: 600;
+            border-bottom: 2px solid rgba(255, 215, 0, 0.3);
+        }
+
+        td {
+            padding: 12px 10px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.03);
+            color: white;
+        }
+
+        .nickname-cell {
+            font-weight: 600;
+            color: #FFD700;
+            text-align: left;
+            padding-left: 15px;
+        }
+
+        input {
+            width: 70px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            color: #FFD700;
+            padding: 6px;
+            text-align: center;
+        }
+
+        .save-btn {
+            background: #4CAF50;
+            border: none;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 215, 0, 0.9);
+            border: none;
+            color: #1c1c2e;
+            padding: 10px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <!-- Кнопка назад -->
+    <a href="/server/{{ project_name }}/{{ server_name }}" class="back-btn">← Назад</a>
+
+    <div class="header">
+        <h1>📊 Таблица данных модераторов</h1>
+        <div class="server-info">
+            Проект: <strong>{{ project_name }}</strong> | Сервер: <strong>{{ server_name }}</strong>
+        </div>
+    </div>
+
+    <div class="controls">
+        <label>Месяц:</label>
+        <select id="table-month" onchange="loadTableData()">
+            <option value="current">Текущий</option>
+            <option value="previous">Прошлый</option>
+        </select>
+        <button onclick="saveAllTableData()">💾 Сохранить все</button>
+        <button onclick="loadTableData()">🔄 Обновить</button>
+    </div>
+
+    <div class="table-container">
+        <table id="staff-table">
+            <thead>
+                <tr>
+                    <th>Ник</th>
+                    <th>Онлайн</th>
+                    <th>Вопросы</th>
+                    <th>Жалобы</th>
+                    <th>Жб. Ст</th>
+                    <th>Прикр.</th>
+                    <th>Собесы</th>
+                    <th>Топ онлайн</th>
+                    <th>Топ вопросы</th>
+                    <th>Действия</th>
+                </tr>
+            </thead>
+            <tbody id="table-body">
+                <tr>
+                    <td colspan="10" style="text-align: center; padding: 40px;">
+                        🔄 Загрузка данных...
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        // ПРОСТОЙ JS ДЛЯ ТАБЛИЦЫ
+        let currentTableData = [];
+
+        // Загружаем данные при открытии страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Загружаем таблицу...');
+            loadTableData();
+        });
+
+        async function loadTableData() {
+            try {
+                const projectName = "{{ project_name }}";
+                const serverName = "{{ server_name }}";
+                const monthSelect = document.getElementById('table-month');
+                const selectedMonth = monthSelect.value;
+
+                const date = new Date();
+                let month, year;
+                if (selectedMonth === 'current') {
+                    month = (date.getMonth() + 1).toString().padStart(2, '0');
+                    year = date.getFullYear();
+                } else {
+                    month = (date.getMonth() === 0 ? 12 : date.getMonth()).toString().padStart(2, '0');
+                    year = date.getMonth() === 0 ? date.getFullYear() - 1 : date.getFullYear();
+                }
+
+                const monthStr = `${year}-${month}`;
+
+                // Показываем загрузку
+                const tbody = document.getElementById('table-body');
+                tbody.innerHTML = '<tr><td colspan="10" style="text-align: center; padding: 40px;">🔄 Загрузка данных...</td></tr>';
+
+                // Получаем модераторов
+                const staffResponse = await fetch('/get_staff');
+                const staffData = await staffResponse.json();
+
+                if (!staffData.body?.users) {
+                    throw new Error('Нет данных модераторов');
+                }
+
+                // Получаем сохраненные данные
+                let savedData = [];
+                try {
+                    const tableResponse = await fetch(`/get_table_data?project=${encodeURIComponent(projectName)}&server=${encodeURIComponent(serverName)}&month=${encodeURIComponent(monthStr)}`);
+                    if (tableResponse.ok) {
+                        savedData = await tableResponse.json();
+                    }
+                } catch (e) {
+                    console.log('Нет сохраненных данных');
+                }
+
+                // Создаем карту сохраненных данных
+                const savedDataMap = {};
+                savedData.forEach(item => {
+                    savedDataMap[item.nickname] = item;
+                });
+
+                // Сортируем модераторов
+                const moderators = Object.entries(staffData.body.users)
+                    .sort((a, b) => {
+                        const roleOrder = {
+                            'group.curator': 1, 'group.grandmoderator': 2, 'group.stmoderator': 3,
+                            'group.moder': 4, 'group.helper': 5, 'group.stajer': 6
+                        };
+                        return (roleOrder[a[1]] || 999) - (roleOrder[b[1]] || 999);
+                    });
+
+                // Генерируем таблицу
+                tbody.innerHTML = '';
+                currentTableData = [];
+
+                moderators.forEach(([nickname, role]) => {
+                    const saved = savedDataMap[nickname] || {};
+
+                    const rowData = {
+                        nickname: nickname,
+                        project: projectName,
+                        server: serverName,
+                        month: monthStr,
+                        online_hours: saved.online_hours || 0,
+                        questions: saved.questions || 0,
+                        complaints: saved.complaints || 0,
+                        severe_complaints: saved.severe_complaints || 0,
+                        attached_moderators: saved.attached_moderators || 0,
+                        interviews: saved.interviews || 0,
+                        online_top: saved.online_top || '',
+                        questions_top: saved.questions_top || ''
+                    };
+
+                    currentTableData.push(rowData);
+
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td class="nickname-cell">${nickname}</td>
+                        <td><input type="number" value="${rowData.online_hours}" data-field="online_hours" data-nickname="${nickname}"></td>
+                        <td><input type="number" value="${rowData.questions}" data-field="questions" data-nickname="${nickname}"></td>
+                        <td><input type="number" value="${rowData.complaints}" data-field="complaints" data-nickname="${nickname}"></td>
+                        <td><input type="number" value="${rowData.severe_complaints}" data-field="severe_complaints" data-nickname="${nickname}"></td>
+                        <td><input type="number" value="${rowData.attached_moderators}" data-field="attached_moderators" data-nickname="${nickname}"></td>
+                        <td><input type="number" value="${rowData.interviews}" data-field="interviews" data-nickname="${nickname}"></td>
+                        <td><input type="number" value="${rowData.online_top}" data-field="online_top" data-nickname="${nickname}" min="1" max="3" placeholder="-"></td>
+                        <td><input type="number" value="${rowData.questions_top}" data-field="questions_top" data-nickname="${nickname}" min="1" max="3" placeholder="-"></td>
+                        <td><button class="save-btn" onclick="saveRowData('${nickname}')">💾</button></td>
+                    `;
+                    tbody.appendChild(row);
+                });
+
+                console.log(`✅ Таблица загружена: ${moderators.length} модераторов`);
+
+            } catch (error) {
+                console.error('Ошибка:', error);
+                document.getElementById('table-body').innerHTML =
+                    `<tr><td colspan="10" style="text-align: center; color: red; padding: 40px;">
+                        ❌ Ошибка: ${error.message}
+                    </td></tr>`;
+            }
+        }
+
+        async function saveRowData(nickname) {
+    const rowData = currentTableData.find(row => row.nickname === nickname);
+    if (!rowData) return;
+
+    // Преобразуем данные чтобы убедиться в правильных типах
+    const dataToSend = {
+        nickname: String(rowData.nickname),
+        project: String(rowData.project),
+        server: String(rowData.server),
+        month: String(rowData.month),
+        online_hours: Number(rowData.online_hours) || 0,
+        questions: Number(rowData.questions) || 0,
+        complaints: Number(rowData.complaints) || 0,
+        severe_complaints: Number(rowData.severe_complaints) || 0,
+        attached_moderators: Number(rowData.attached_moderators) || 0,
+        interviews: Number(rowData.interviews) || 0,
+        online_top: rowData.online_top === '' ? null : Number(rowData.online_top),
+        questions_top: rowData.questions_top === '' ? null : Number(rowData.questions_top)
+    };
+
+    console.log('Отправляемые данные:', dataToSend);
+
+    try {
+        const response = await fetch('/save_table_data', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(dataToSend)
+        });
+
+        if (response.ok) {
+            alert(`✅ Данные для ${nickname} сохранены`);
+        } else {
+            const error = await response.text();
+            throw new Error(error);
+        }
+    } catch (error) {
+        alert('❌ Ошибка сохранения: ' + error.message);
+    }
+}
+// Обработчик изменений в полях ввода
+document.addEventListener('input', function(event) {
+    if (event.target.tagName === 'INPUT') {
+        const field = event.target.dataset.field;
+        const nickname = event.target.dataset.nickname;
+        const value = event.target.value;
+
+        // Находим соответствующую запись в currentTableData
+        const rowData = currentTableData.find(row => row.nickname === nickname);
+        if (rowData) {
+            // Обновляем значение в данных
+            if (field === 'online_top' || field === 'questions_top') {
+                rowData[field] = value === '' ? '' : Number(value);
+            } else {
+                rowData[field] = Number(value) || 0;
+            }
+
+            console.log(`Обновлено: ${nickname}.${field} = ${value}`);
+        }
+    }
+});
+
+        async function saveAllTableData() {
+    try {
+        // Преобразуем все данные перед отправкой
+        const dataToSend = currentTableData.map(rowData => ({
+            nickname: String(rowData.nickname),
+            project: String(rowData.project),
+            server: String(rowData.server),
+            month: String(rowData.month),
+            online_hours: Number(rowData.online_hours) || 0,
+            questions: Number(rowData.questions) || 0,
+            complaints: Number(rowData.complaints) || 0,
+            severe_complaints: Number(rowData.severe_complaints) || 0,
+            attached_moderators: Number(rowData.attached_moderators) || 0,
+            interviews: Number(rowData.interviews) || 0,
+            online_top: rowData.online_top === '' ? null : Number(rowData.online_top),
+            questions_top: rowData.questions_top === '' ? null : Number(rowData.questions_top)
+        }));
+
+        console.log('Отправляемые данные (все):', dataToSend);
+
+        const response = await fetch('/save_table_data_batch', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(dataToSend)
+        });
+
+        if (response.ok) {
+            alert('✅ Все данные сохранены');
+        } else {
+            throw new Error('Ошибка сервера');
+        }
+    } catch (error) {
+        alert('❌ Ошибка сохранения: ' + error.message);
+    }
+}
+    </script>
+</body>
+</html>
